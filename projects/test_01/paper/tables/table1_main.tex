@@ -1,0 +1,18 @@
+\begin{tabular}{lcccc}
+\hline\hline
+ & (1) & (2) & (3) & (4) \\
+ & Pooled & +Controls & \textbf{Estab FE} & Estab FE \\
+ &  &  & \textbf{(primary)} & +Type \\
+\hline
+Temperature (+10$^\circ$C) & 0.615*** & 0.493* & 0.443 & 0.329 \\
+ & (0.136) & (0.275) & (0.308) & (0.280) \\
+Precipitation (+10mm) & -0.091 & -0.095 & -0.293 & -0.118 \\
+ & (0.230) & (0.210) & (0.235) & (0.216) \\
+\hline
+Establishment FE & no & no & yes & yes \\
+Month-of-year, Year FE & no & yes & yes & yes \\
+Inspection-type FE & no & yes & no & yes \\
+N & 116,466 & 116,466 & 116,466 & 116,466 \\
+\hline\hline
+\multicolumn{5}{p{0.92\linewidth}}{\footnotesize Dep.\ var.: \emph{fail} (=1). Coefficients in percentage points; SE clustered by calendar date in parentheses (G=1969 day-clusters). Column (3) is the preferred primary: it does not condition on inspection type, which is a downstream mediator of weather (warm days shift the inspection mix). Column (4) conditions on type. *** p$<$.01, ** p$<$.05, * p$<$.1.}\\
+\end{tabular}

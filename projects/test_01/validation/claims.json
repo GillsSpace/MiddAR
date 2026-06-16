@@ -1,0 +1,907 @@
+{
+  "claims": [
+    {
+      "key": "n_sample",
+      "value": 116466,
+      "script": "work/04_analysis/estimate.py",
+      "unit": "inspections",
+      "desc": "substantive inspections (pass/pass_w_conditions/fail)"
+    },
+    {
+      "key": "fail_rate",
+      "value": 0.2276,
+      "script": "work/04_analysis/estimate.py",
+      "unit": "share",
+      "desc": "mean of fail outcome"
+    },
+    {
+      "key": "n_estab",
+      "value": 20994,
+      "script": "work/04_analysis/estimate.py",
+      "desc": "unique establishments"
+    },
+    {
+      "key": "n_dayclusters",
+      "value": 1969,
+      "script": "work/04_analysis/estimate.py",
+      "desc": "calendar-date clusters"
+    },
+    {
+      "key": "temp_mean_mean",
+      "value": 10.88,
+      "script": "work/04_analysis/estimate.py",
+      "unit": "degC",
+      "desc": "mean inspection-day temperature"
+    },
+    {
+      "key": "temp_mean_sd",
+      "value": 10.19,
+      "script": "work/04_analysis/estimate.py",
+      "unit": "degC",
+      "desc": "sd inspection-day temperature"
+    },
+    {
+      "key": "temp10_beta_spec1",
+      "value": 0.00615,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.00136,
+      "p": 0.0,
+      "unit": "ppt_per_10C",
+      "spec": "(1) Pooled",
+      "fe": "none",
+      "n": 116466,
+      "desc": "LPM coef on temperature(+10C) for fail, spec (1) Pooled",
+      "log_line": "(1) Pooled: temp10 beta=0.00615 se=0.00136 p=0.0000"
+    },
+    {
+      "key": "precip10_beta_spec1",
+      "value": -0.00091,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.0023,
+      "p": 0.6922,
+      "unit": "ppt_per_10mm",
+      "spec": "(1) Pooled",
+      "fe": "none",
+      "n": 116466,
+      "desc": "LPM coef on precipitation(+10mm) for fail, spec (1) Pooled",
+      "log_line": "(1) Pooled: precip10 beta=-0.00091 se=0.00230 p=0.6922"
+    },
+    {
+      "key": "temp10_beta_spec2",
+      "value": 0.00493,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.00275,
+      "p": 0.0733,
+      "unit": "ppt_per_10C",
+      "spec": "(2) +Controls",
+      "fe": "Month,Year,Risk,Type",
+      "n": 116466,
+      "desc": "LPM coef on temperature(+10C) for fail, spec (2) +Controls",
+      "log_line": "(2) +Controls: temp10 beta=0.00493 se=0.00275 p=0.0733"
+    },
+    {
+      "key": "precip10_beta_spec2",
+      "value": -0.00095,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.0021,
+      "p": 0.6502,
+      "unit": "ppt_per_10mm",
+      "spec": "(2) +Controls",
+      "fe": "Month,Year,Risk,Type",
+      "n": 116466,
+      "desc": "LPM coef on precipitation(+10mm) for fail, spec (2) +Controls",
+      "log_line": "(2) +Controls: precip10 beta=-0.00095 se=0.00210 p=0.6502"
+    },
+    {
+      "key": "temp10_beta_spec3",
+      "value": 0.00443,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.00308,
+      "p": 0.1507,
+      "unit": "ppt_per_10C",
+      "spec": "(3) Estab FE",
+      "fe": "Estab,Month,Year",
+      "n": 116466,
+      "desc": "LPM coef on temperature(+10C) for fail, spec (3) Estab FE",
+      "log_line": "(3) Estab FE: temp10 beta=0.00443 se=0.00308 p=0.1507"
+    },
+    {
+      "key": "precip10_beta_spec3",
+      "value": -0.00293,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.00235,
+      "p": 0.2121,
+      "unit": "ppt_per_10mm",
+      "spec": "(3) Estab FE",
+      "fe": "Estab,Month,Year",
+      "n": 116466,
+      "desc": "LPM coef on precipitation(+10mm) for fail, spec (3) Estab FE",
+      "log_line": "(3) Estab FE: precip10 beta=-0.00293 se=0.00235 p=0.2121"
+    },
+    {
+      "key": "temp10_beta_spec4",
+      "value": 0.00329,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.0028,
+      "p": 0.2398,
+      "unit": "ppt_per_10C",
+      "spec": "(4) Estab FE +Type",
+      "fe": "Estab,Month,Year,Type",
+      "n": 116466,
+      "desc": "LPM coef on temperature(+10C) for fail, spec (4) Estab FE +Type",
+      "log_line": "(4) Estab FE +Type: temp10 beta=0.00329 se=0.00280 p=0.2398"
+    },
+    {
+      "key": "precip10_beta_spec4",
+      "value": -0.00118,
+      "script": "work/04_analysis/estimate.py",
+      "se": 0.00216,
+      "p": 0.5852,
+      "unit": "ppt_per_10mm",
+      "spec": "(4) Estab FE +Type",
+      "fe": "Estab,Month,Year,Type",
+      "n": 116466,
+      "desc": "LPM coef on precipitation(+10mm) for fail, spec (4) Estab FE +Type",
+      "log_line": "(4) Estab FE +Type: precip10 beta=-0.00118 se=0.00216 p=0.5852"
+    },
+    {
+      "key": "placebo_temp_ppt_per10C",
+      "value": 0.158,
+      "script": "work/04_analysis/diagnostics.py",
+      "se": 0.128,
+      "p": 0.2189,
+      "unit": "percentage_points_per_10C",
+      "desc": "PLACEBO: primary spec with weather randomly reassigned across days",
+      "log_line": "placebo temp10 beta=0.00158 se=0.00128 p=0.2189"
+    },
+    {
+      "key": "seasonpoly_temp_ppt_per10C",
+      "value": 0.166,
+      "script": "work/04_analysis/diagnostics.py",
+      "se": 0.273,
+      "p": 0.5432,
+      "unit": "percentage_points_per_10C",
+      "desc": "robustness: estab+year+type FE with cubic day-of-year polynomial",
+      "log_line": "doypoly temp10 beta=0.00166 se=0.00273 p=0.5432"
+    },
+    {
+      "key": "balance_n_on_temp10",
+      "value": -0.1332,
+      "script": "work/04_analysis/diagnostics.py",
+      "se": 0.4419,
+      "p": 0.7632,
+      "desc": "day-level OLS of n on temp(+10C): composition/volume balance",
+      "log_line": "n on temp10: beta=-0.1332 se=0.4419 p=0.7632"
+    },
+    {
+      "key": "balance_share_complaint_on_temp10",
+      "value": 0.0148,
+      "script": "work/04_analysis/diagnostics.py",
+      "se": 0.0021,
+      "p": 0.0,
+      "desc": "day-level OLS of share_complaint on temp(+10C): composition/volume balance",
+      "log_line": "share_complaint on temp10: beta=0.0148 se=0.0021 p=0.0000"
+    },
+    {
+      "key": "balance_share_canvass_on_temp10",
+      "value": -0.0256,
+      "script": "work/04_analysis/diagnostics.py",
+      "se": 0.003,
+      "p": 0.0,
+      "desc": "day-level OLS of share_canvass on temp(+10C): composition/volume balance",
+      "log_line": "share_canvass on temp10: beta=-0.0256 se=0.0030 p=0.0000"
+    },
+    {
+      "key": "robust_spec00_temp_ppt10C",
+      "value": 0.329,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.28,
+      "p": 0.2398,
+      "n": 116466,
+      "spec": "Primary (Estab+Month+Year+Type FE)",
+      "desc": "robustness temp(+10C) effect: Primary (Estab+Month+Year+Type FE)",
+      "log_line": "Primary (Estab+Month+Year+Type FE): beta=0.00329 se=0.00280 p=0.2398 n=116466"
+    },
+    {
+      "key": "robust_spec01_temp_ppt10C",
+      "value": 0.329,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.291,
+      "p": 0.2586,
+      "n": 116466,
+      "spec": "Cluster by establishment",
+      "desc": "robustness temp(+10C) effect: Cluster by establishment",
+      "log_line": "Cluster by establishment: beta=0.00329 se=0.00291 p=0.2586 n=116466"
+    },
+    {
+      "key": "robust_spec02_temp_ppt10C",
+      "value": 0.329,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.307,
+      "p": 0.2842,
+      "n": 116466,
+      "spec": "Cluster by ZIP",
+      "desc": "robustness temp(+10C) effect: Cluster by ZIP",
+      "log_line": "Cluster by ZIP: beta=0.00329 se=0.00307 p=0.2842 n=116466"
+    },
+    {
+      "key": "robust_spec03_temp_ppt10C",
+      "value": 0.201,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.234,
+      "p": 0.3915,
+      "n": 116466,
+      "spec": "Use daily MAX temp",
+      "desc": "robustness temp(+10C) effect: Use daily MAX temp",
+      "log_line": "Use daily MAX temp: beta=0.00201 se=0.00234 p=0.3915 n=116466"
+    },
+    {
+      "key": "robust_spec04_temp_ppt10C",
+      "value": 0.332,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.233,
+      "p": 0.1543,
+      "n": 116466,
+      "spec": "Use apparent temp",
+      "desc": "robustness temp(+10C) effect: Use apparent temp",
+      "log_line": "Use apparent temp: beta=0.00332 se=0.00233 p=0.1543 n=116466"
+    },
+    {
+      "key": "robust_spec05_temp_ppt10C",
+      "value": 0.443,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.308,
+      "p": 0.1507,
+      "n": 116466,
+      "spec": "Drop Type FE (Estab+Month+Year)",
+      "desc": "robustness temp(+10C) effect: Drop Type FE (Estab+Month+Year)",
+      "log_line": "Drop Type FE (Estab+Month+Year): beta=0.00443 se=0.00308 p=0.1507 n=116466"
+    },
+    {
+      "key": "robust_spec06_temp_ppt10C",
+      "value": 0.33,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.28,
+      "p": 0.2385,
+      "n": 116462,
+      "spec": "Add ZIP FE",
+      "desc": "robustness temp(+10C) effect: Add ZIP FE",
+      "log_line": "Add ZIP FE: beta=0.00330 se=0.00280 p=0.2385 n=116462"
+    },
+    {
+      "key": "robust_spec07_temp_ppt10C",
+      "value": 0.853,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.396,
+      "p": 0.0312,
+      "n": 57636,
+      "spec": "Canvass inspections only",
+      "desc": "robustness temp(+10C) effect: Canvass inspections only",
+      "log_line": "Canvass inspections only: beta=0.00853 se=0.00396 p=0.0312 n=57636"
+    },
+    {
+      "key": "robust_spec08_temp_ppt10C",
+      "value": 0.472,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.329,
+      "p": 0.152,
+      "n": 79782,
+      "spec": "Restaurants only",
+      "desc": "robustness temp(+10C) effect: Restaurants only",
+      "log_line": "Restaurants only: beta=0.00472 se=0.00329 p=0.1520 n=79782"
+    },
+    {
+      "key": "robust_spec09_temp_ppt10C",
+      "value": 0.575,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.307,
+      "p": 0.0612,
+      "n": 92828,
+      "spec": "Risk 1 (high) only",
+      "desc": "robustness temp(+10C) effect: Risk 1 (high) only",
+      "log_line": "Risk 1 (high) only: beta=0.00575 se=0.00307 p=0.0612 n=92828"
+    },
+    {
+      "key": "robust_spec10_temp_ppt10C",
+      "value": 1.145,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.902,
+      "p": 0.2045,
+      "n": 22674,
+      "spec": "Pre-2020 only",
+      "desc": "robustness temp(+10C) effect: Pre-2020 only",
+      "log_line": "Pre-2020 only: beta=0.01145 se=0.00902 p=0.2045 n=22674"
+    },
+    {
+      "key": "robust_spec11_temp_ppt10C",
+      "value": -0.084,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.313,
+      "p": 0.7887,
+      "n": 93792,
+      "spec": "2020+ only",
+      "desc": "robustness temp(+10C) effect: 2020+ only",
+      "log_line": "2020+ only: beta=-0.00084 se=0.00313 p=0.7887 n=93792"
+    },
+    {
+      "key": "robust_spec12_temp_ppt10C",
+      "value": 0.464,
+      "script": "work/05_robustness/robustness.py",
+      "se": 0.291,
+      "p": 0.1109,
+      "n": 114272,
+      "spec": "Trim temp 1/99 pct",
+      "desc": "robustness temp(+10C) effect: Trim temp 1/99 pct",
+      "log_line": "Trim temp 1/99 pct: beta=0.00464 se=0.00291 p=0.1109 n=114272"
+    },
+    {
+      "key": "robust_n_specs",
+      "value": 13,
+      "script": "work/05_robustness/robustness.py",
+      "desc": "number of robustness specs on temp effect"
+    },
+    {
+      "key": "robust_share_positive",
+      "value": 0.923,
+      "script": "work/05_robustness/robustness.py",
+      "desc": "share of robustness specs with positive temp sign"
+    },
+    {
+      "key": "robust_share_sig",
+      "value": 0.154,
+      "script": "work/05_robustness/robustness.py",
+      "desc": "share significant at 0.1"
+    },
+    {
+      "key": "robust_share_pos_and_sig",
+      "value": 0.154,
+      "script": "work/05_robustness/robustness.py",
+      "desc": "share positive AND significant at 0.1"
+    },
+    {
+      "key": "H3_bins_joint_p",
+      "value": 0.3439,
+      "script": "work/05_robustness/robustness.py",
+      "desc": "joint Wald p that all temperature-bin coefs=0 (test of any nonlinear temp effect)",
+      "log_line": "temp-bin joint Wald stat=5.630 p=0.3439"
+    },
+    {
+      "key": "H3_gt30_vs_lt0_ppt",
+      "value": 1.074,
+      "script": "work/05_robustness/robustness.py",
+      "se": 2.867,
+      "p": 0.7079,
+      "desc": "fail-prob gap (ppt) for >30C days vs <0C days, within estab"
+    },
+    {
+      "key": "profile_n_estab",
+      "value": 23737,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "PROFILE-LEVEL unique establishments (full file, before substantive-sample restriction)"
+    },
+    {
+      "key": "profile_n_weatherdays",
+      "value": 1983,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "PROFILE-LEVEL unique weather-days (full file)"
+    },
+    {
+      "key": "est_n_estab",
+      "value": 20994,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "ESTIMATION-SAMPLE establishments (substantive sample)"
+    },
+    {
+      "key": "est_n_dayclusters",
+      "value": 1969,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "ESTIMATION-SAMPLE day-clusters; governs inference"
+    },
+    {
+      "key": "primaryB_temp_ppt_per10C",
+      "value": 0.329,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.28,
+      "p": 0.2398,
+      "df_clusters": 1969,
+      "ci_t": [
+        -0.22,
+        0.878
+      ],
+      "unit": "ppt_per_10C",
+      "spec": "Estab+Month+Year+Type FE (direct, conditions on mediator type)",
+      "sig_vs_zero": false,
+      "desc": "co-primary WITH type FE; t(G-1) CI",
+      "log_line": "primaryB temp10=0.00329 se=0.00280 p=0.2398 G=1969 tCI=[-0.220,0.878]"
+    },
+    {
+      "key": "primaryA_temp_ppt_per10C",
+      "value": 0.443,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.308,
+      "p": 0.1507,
+      "df_clusters": 1969,
+      "ci_t": [
+        -0.161,
+        1.047
+      ],
+      "unit": "ppt_per_10C",
+      "spec": "Estab+Month+Year FE (reduced-form total effect, no mediator conditioning)",
+      "sig_vs_zero": false,
+      "desc": "CO-PRIMARY without type FE (preferred: type is a mediator); t(G-1) CI",
+      "log_line": "primaryA temp10=0.00443 se=0.00308 p=0.1507 G=1969 tCI=[-0.161,1.047]"
+    },
+    {
+      "key": "coarse_A_estabMY_cluster_week",
+      "value": 0.443,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.364,
+      "p": 0.2236,
+      "df_clusters": 415,
+      "desc": "co-primary A_estabMY clustered by week (coarser, weather autocorrelation)",
+      "log_line": "A_estabMY/week: b=0.443ppt se=0.364 p=0.2236 G=415"
+    },
+    {
+      "key": "coarse_A_estabMY_cluster_ym",
+      "value": 0.443,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.376,
+      "p": 0.2392,
+      "df_clusters": 96,
+      "desc": "co-primary A_estabMY clustered by ym (coarser, weather autocorrelation)",
+      "log_line": "A_estabMY/ym: b=0.443ppt se=0.376 p=0.2392 G=96"
+    },
+    {
+      "key": "coarse_B_estabMYType_cluster_week",
+      "value": 0.329,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.328,
+      "p": 0.3152,
+      "df_clusters": 415,
+      "desc": "co-primary B_estabMYType clustered by week (coarser, weather autocorrelation)",
+      "log_line": "B_estabMYType/week: b=0.329ppt se=0.328 p=0.3152 G=415"
+    },
+    {
+      "key": "coarse_B_estabMYType_cluster_ym",
+      "value": 0.329,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.348,
+      "p": 0.3438,
+      "df_clusters": 96,
+      "desc": "co-primary B_estabMYType clustered by ym (coarser, weather autocorrelation)",
+      "log_line": "B_estabMYType/ym: b=0.329ppt se=0.348 p=0.3438 G=96"
+    },
+    {
+      "key": "contested_Canvass_only_cluster_day",
+      "value": 0.853,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.396,
+      "p": 0.0312,
+      "df_clusters": 1947,
+      "desc": "Canvass_only temp effect clustered by day",
+      "log_line": "Canvass_only/day: b=0.853 se=0.396 p=0.0312 G=1947"
+    },
+    {
+      "key": "contested_Canvass_only_cluster_week",
+      "value": 0.853,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.437,
+      "p": 0.0509,
+      "df_clusters": 415,
+      "desc": "Canvass_only temp effect clustered by week",
+      "log_line": "Canvass_only/week: b=0.853 se=0.437 p=0.0509 G=415"
+    },
+    {
+      "key": "contested_Canvass_only_cluster_ym",
+      "value": 0.853,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.469,
+      "p": 0.0688,
+      "df_clusters": 96,
+      "desc": "Canvass_only temp effect clustered by ym",
+      "log_line": "Canvass_only/ym: b=0.853 se=0.469 p=0.0688 G=96"
+    },
+    {
+      "key": "contested_Risk1_only_cluster_day",
+      "value": 0.575,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.307,
+      "p": 0.0612,
+      "df_clusters": 1958,
+      "desc": "Risk1_only temp effect clustered by day",
+      "log_line": "Risk1_only/day: b=0.575 se=0.307 p=0.0612 G=1958"
+    },
+    {
+      "key": "contested_Risk1_only_cluster_week",
+      "value": 0.575,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.351,
+      "p": 0.1018,
+      "df_clusters": 415,
+      "desc": "Risk1_only temp effect clustered by week",
+      "log_line": "Risk1_only/week: b=0.575 se=0.351 p=0.1018 G=415"
+    },
+    {
+      "key": "contested_Risk1_only_cluster_ym",
+      "value": 0.575,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.352,
+      "p": 0.1025,
+      "df_clusters": 96,
+      "desc": "Risk1_only temp effect clustered by ym",
+      "log_line": "Risk1_only/ym: b=0.575 se=0.352 p=0.1025 G=96"
+    },
+    {
+      "key": "contested_Canvass_wildboot_p_ym",
+      "value": 0.082,
+      "script": "work/05_robustness/referee_fixes.py",
+      "t_stat": 1.82,
+      "df_clusters": 96,
+      "desc": "Canvass-only: wild-cluster bootstrap p (Rademacher, null imposed, month clusters, 999 reps)",
+      "log_line": "Canvass wild-cluster boot: t=1.820 p=0.0820 G=96"
+    },
+    {
+      "key": "robust_min_p",
+      "value": 0.0312,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "smallest p among 13 robustness specs"
+    },
+    {
+      "key": "robust_min_p_bonferroni",
+      "value": 0.4056,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "Bonferroni-adjusted smallest p across 13 robustness tests"
+    },
+    {
+      "key": "robust_expected_false_pos_at05",
+      "value": 0.65,
+      "script": "work/05_robustness/referee_fixes.py",
+      "desc": "expected number of false positives at alpha=.05 across 13 tests"
+    },
+    {
+      "key": "H5b_within_vc_count_per10C",
+      "value": 0.0548,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.0229,
+      "p": 0.0168,
+      "df_clusters": 1969,
+      "sig_vs_zero": true,
+      "desc": "WITHIN-estab linear FE intensive margin: vc on temp(+10C), estab+month+year+type FE, cluster date",
+      "log_line": "H5b_within_vc_count: b=0.05483 se=0.02294 p=0.0168 G=1969"
+    },
+    {
+      "key": "H5b_within_asinh_per10C",
+      "value": 0.0153,
+      "script": "work/05_robustness/referee_fixes.py",
+      "se": 0.0057,
+      "p": 0.007,
+      "df_clusters": 1969,
+      "sig_vs_zero": true,
+      "desc": "WITHIN-estab linear FE intensive margin: asinh_vc on temp(+10C), estab+month+year+type FE, cluster date",
+      "log_line": "H5b_within_asinh: b=0.01532 se=0.00568 p=0.0070 G=1969"
+    },
+    {
+      "key": "H5_count_temp_irr_per10C",
+      "value": 1.0169,
+      "script": "work/05_robustness/robustness.py",
+      "p": 0.0092,
+      "desc": "H5 secondary: Poisson IRR of violation_count per +10C (month/year/type FE, NO estab FE), cluster date",
+      "log_line": "poisson temp10 coef=0.01672 IRR=1.0169 p=0.0092",
+      "cross_sectional_only": true,
+      "sig_vs_zero": false,
+      "note": "POOLED cross-sectional (no estab FE); NOT the within-establishment estimand. See H5b_* for within."
+    },
+    {
+      "key": "H5c_noType_count_cluster_day",
+      "value": 0.0617,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0269,
+      "p": 0.0216,
+      "df_clusters": 1969,
+      "desc": "within-estab intensive margin vc on temp(+10C), NO type FE, cluster day",
+      "log_line": "H5c noType count/day: b=0.0617 se=0.0269 p=0.0216 G=1969"
+    },
+    {
+      "key": "H5c_noType_count_cluster_week",
+      "value": 0.0617,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0324,
+      "p": 0.0568,
+      "df_clusters": 415,
+      "desc": "within-estab intensive margin vc on temp(+10C), NO type FE, cluster week",
+      "log_line": "H5c noType count/week: b=0.0617 se=0.0324 p=0.0568 G=415"
+    },
+    {
+      "key": "H5c_noType_count_cluster_ym",
+      "value": 0.0617,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0357,
+      "p": 0.0834,
+      "df_clusters": 96,
+      "desc": "within-estab intensive margin vc on temp(+10C), NO type FE, cluster ym",
+      "log_line": "H5c noType count/ym: b=0.0617 se=0.0357 p=0.0834 G=96"
+    },
+    {
+      "key": "H5c_noType_asinh_cluster_day",
+      "value": 0.0173,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0068,
+      "p": 0.0105,
+      "df_clusters": 1969,
+      "desc": "within-estab intensive margin asinh_vc on temp(+10C), NO type FE, cluster day",
+      "log_line": "H5c noType asinh/day: b=0.0173 se=0.0068 p=0.0105 G=1969"
+    },
+    {
+      "key": "H5c_noType_asinh_cluster_week",
+      "value": 0.0173,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0081,
+      "p": 0.0318,
+      "df_clusters": 415,
+      "desc": "within-estab intensive margin asinh_vc on temp(+10C), NO type FE, cluster week",
+      "log_line": "H5c noType asinh/week: b=0.0173 se=0.0081 p=0.0318 G=415"
+    },
+    {
+      "key": "H5c_noType_asinh_cluster_ym",
+      "value": 0.0173,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.0089,
+      "p": 0.0508,
+      "df_clusters": 96,
+      "desc": "within-estab intensive margin asinh_vc on temp(+10C), NO type FE, cluster ym",
+      "log_line": "H5c noType asinh/ym: b=0.0173 se=0.0089 p=0.0508 G=96"
+    },
+    {
+      "key": "coarse_A_estabMY_cluster_week_ci",
+      "value": [
+        -0.272,
+        1.157
+      ],
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.364,
+      "df_clusters": 415,
+      "p": 0.2236,
+      "value_ppt": 0.443,
+      "desc": "preferred primary t(G-1) CI under week clustering (honest serially-robust inference)",
+      "log_line": "primaryA week: b=0.443ppt CI=[-0.272,1.157] G=415"
+    },
+    {
+      "key": "coarse_A_estabMY_cluster_ym_ci",
+      "value": [
+        -0.304,
+        1.189
+      ],
+      "script": "work/05_robustness/referee_fixes2.py",
+      "se": 0.376,
+      "df_clusters": 96,
+      "p": 0.2392,
+      "value_ppt": 0.443,
+      "desc": "preferred primary t(G-1) CI under ym clustering (honest serially-robust inference)",
+      "log_line": "primaryA ym: b=0.443ppt CI=[-0.304,1.189] G=96"
+    },
+    {
+      "key": "primaryA_widest_upper_ppt",
+      "value": 1.189,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "pct_of_baserate": 5.22,
+      "desc": "widest honest upper 95% bound on temp effect across date/week/month clustering (largest effect NOT ruled out)",
+      "log_line": "widest upper bound = 1.189 ppt/10C = 5.22% of base rate"
+    },
+    {
+      "key": "primaryA_pct_of_baserate_per10C",
+      "value": 1.95,
+      "script": "work/05_robustness/referee_fixes2.py",
+      "sig_vs_zero": false,
+      "ci_pct": [
+        -0.71,
+        4.6
+      ],
+      "desc": "preferred primary temp effect as % of base fail rate; NOT sig diff from zero; quote with CI",
+      "log_line": "primaryA %base = 0.443/22.760*100 = 1.95%"
+    },
+    {
+      "key": "H5b_within_vc_count_cluster_week",
+      "value": 0.0548,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.027,
+      "p": 0.0428,
+      "df_clusters": 415,
+      "desc": "within-estab intensive margin vc on temp(+10C), clustered by week"
+    },
+    {
+      "key": "H5b_within_vc_count_cluster_ym",
+      "value": 0.0548,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.0306,
+      "p": 0.0762,
+      "df_clusters": 96,
+      "desc": "within-estab intensive margin vc on temp(+10C), clustered by ym"
+    },
+    {
+      "key": "H5b_within_asinh_cluster_week",
+      "value": 0.0153,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.0065,
+      "p": 0.0197,
+      "df_clusters": 415,
+      "desc": "within-estab intensive margin asinh_vc on temp(+10C), clustered by week"
+    },
+    {
+      "key": "H5b_within_asinh_cluster_ym",
+      "value": 0.0153,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.0072,
+      "p": 0.0351,
+      "df_clusters": 96,
+      "desc": "within-estab intensive margin asinh_vc on temp(+10C), clustered by ym"
+    },
+    {
+      "key": "primaryA_scheduled_cluster_week",
+      "value": 0.674,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.404,
+      "p": 0.0959,
+      "df_clusters": 415,
+      "desc": "scheduled (non-complaint) primary clustered by week"
+    },
+    {
+      "key": "primaryA_scheduled_cluster_ym",
+      "value": 0.674,
+      "script": "work/05_robustness/extra_inference.py",
+      "se": 0.407,
+      "p": 0.1006,
+      "df_clusters": 96,
+      "desc": "scheduled (non-complaint) primary clustered by ym"
+    },
+    {
+      "key": "estimator_equiv_maxdelta",
+      "value": 8e-05,
+      "script": "work/05_robustness/extra_inference.py",
+      "coef_AbsorbingLS": 0.4426,
+      "coef_pyhdfe": 0.4426,
+      "se_AbsorbingLS": 0.308,
+      "se_pyhdfe": 0.3081,
+      "desc": "max abs delta (ppt) between linearmodels.AbsorbingLS and manual pyhdfe HDFE-OLS on primary cell"
+    },
+    {
+      "key": "H5_family_min_p",
+      "value": 0.007,
+      "script": "work/05_robustness/extra_inference.py",
+      "n_tests": 12,
+      "bonferroni": 0.084,
+      "desc": "count-outcome family: smallest p over with/without-type x {asinh,count} x {date,week,month}; Bonferroni-adjusted"
+    },
+    {
+      "key": "H4_restaurant_cluster_day",
+      "value": 0.863,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.297,
+      "p": 0.0037,
+      "df_clusters": 1969,
+      "ci_t": [
+        0.281,
+        1.445
+      ],
+      "desc": "H4 temp x restaurant interaction (ppt/10C), clustered by day; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_restaurant_cluster_week",
+      "value": 0.863,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.303,
+      "p": 0.0047,
+      "df_clusters": 415,
+      "ci_t": [
+        0.267,
+        1.46
+      ],
+      "desc": "H4 temp x restaurant interaction (ppt/10C), clustered by week; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_restaurant_cluster_ym",
+      "value": 0.863,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.345,
+      "p": 0.014,
+      "df_clusters": 96,
+      "ci_t": [
+        0.179,
+        1.548
+      ],
+      "desc": "H4 temp x restaurant interaction (ppt/10C), clustered by ym; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_risk1_cluster_day",
+      "value": -0.176,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.322,
+      "p": 0.5845,
+      "df_clusters": 1969,
+      "ci_t": [
+        -0.806,
+        0.455
+      ],
+      "desc": "H4 temp x risk1 interaction (ppt/10C), clustered by day; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_risk1_cluster_week",
+      "value": -0.176,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.339,
+      "p": 0.6037,
+      "df_clusters": 415,
+      "ci_t": [
+        -0.841,
+        0.49
+      ],
+      "desc": "H4 temp x risk1 interaction (ppt/10C), clustered by week; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_risk1_cluster_ym",
+      "value": -0.176,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.329,
+      "p": 0.5945,
+      "df_clusters": 96,
+      "ci_t": [
+        -0.83,
+        0.478
+      ],
+      "desc": "H4 temp x risk1 interaction (ppt/10C), clustered by ym; estab FE absorbs main effect"
+    },
+    {
+      "key": "H4_rest_dropfac_baseline_ppt",
+      "value": 0.863,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.297,
+      "p": 0.0037,
+      "df_clusters": 1969,
+      "ci_t": [
+        0.281,
+        1.445
+      ],
+      "desc": "H4 temp x restaurant baseline (date-clustered), for drop-one-facility-type diagnostic"
+    },
+    {
+      "key": "H4_rest_dropfac_min_beta_ppt",
+      "value": 0.43,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "desc": "min temp x restaurant coef across drop-one-facility-type (of top 8 types)"
+    },
+    {
+      "key": "H4_rest_dropfac_max_p",
+      "value": 0.1711,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "desc": "max p of temp x restaurant across drop-one-facility-type; must stay <.05 to pass H4 diagnostic"
+    },
+    {
+      "key": "H4_rest_dropfac_pass",
+      "value": false,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "desc": "H4 pre-registered must-pass: restaurant interaction robust to dropping any single facility type",
+      "log_line": "drop Grocery Store: b=1.331ppt p=0.0001; drop School: b=0.430ppt p=0.1711; drop Children's Service: b=0.666ppt p=0.0362; drop Daycare Above and : b=0.950ppt p=0.0018; drop Bakery: b=1.014ppt p=0.0008; drop Long Term Care: b=0.815ppt p=0.0070; drop Daycare (2 - 6 Yea: b=0.786ppt p=0.0092; drop Mobile Food Prepar: b=0.831ppt p=0.0054"
+    },
+    {
+      "key": "primaryA_scheduled_temp_ppt_per10C",
+      "value": 0.674,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "se": 0.348,
+      "p": 0.0526,
+      "df_clusters": 1964,
+      "ci_t": [
+        -0.008,
+        1.356
+      ],
+      "n": 95522,
+      "sig_vs_zero": false,
+      "desc": "PREFERRED primary restricted to SCHEDULED (non-complaint) inspections -> isolates non-selection channel",
+      "log_line": "scheduled primaryA temp10=0.00674 se=0.00348 p=0.0526 G=1964 n=95522 CI=[-0.008,1.356]"
+    },
+    {
+      "key": "complaint_share",
+      "value": 0.1798,
+      "script": "work/05_robustness/referee_fixes3.py",
+      "desc": "share of substantive inspections that are complaint-driven (endogenous timing)"
+    }
+  ]
+}

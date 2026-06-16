@@ -1,0 +1,67 @@
+{
+  "dataset": "data/raw/chicago_inspections_weather.parquet",
+  "sample": "Substantive inspections only: results in {pass, pass_w_conditions, fail}. N=116466. Drop out_of_business/no_entry/not_ready/business_not_located.",
+  "outcome_primary": "fail = 1[results=='fail'] in {0,1}",
+  "outcome_secondary": "violation_count (citation count; Poisson/NB) — treated as an ALTERNATIVE outcome, never RHS",
+  "exposure": "inspection-day weather (mean temperature degC; precipitation_sum mm). Plausibly exogenous to a given establishment's latent food-safety state.",
+  "shared_identification_note": "Weather is identical for all inspections on a calendar date (within-day std=0). All SE clustered by calendar date; effective N = 1983 day-clusters. Treatment varies only across days, so seasonal confounding is the central threat and is addressed with month FE / day-of-year controls and placebo weather.",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "Higher inspection-day temperature raises the probability that a food establishment FAILS inspection (thermal stress on cold-holding/refrigeration and faster microbial growth).",
+      "spec": "LPM: fail = beta*temp_mean_10C + establishment FE + month-of-year FE + controls(inspection_type, risk). SE clustered by date.",
+      "treatment_var": "temperature_2m_mean (scaled per +10 degC)",
+      "identification": "Within-establishment, within-month variation in inspection-day temperature is as-good-as-random with respect to that establishment's latent conditions. Establishment FE absorb location/cuisine/management; month FE absorb seasonality.",
+      "must_pass_diagnostic": "PLACEBO: reassign each inspection a random OTHER day's weather -> coefficient must collapse toward 0. Plus seasonality robustness (add day-of-year polynomial + year FE; sign/significance stable) and composition balance (inspection_type mix not driven by temp).",
+      "feasible": true,
+      "primary": true
+    },
+    {
+      "id": "H2",
+      "statement": "Inspection-day precipitation lowers the probability of failing, via fewer discretionary/complaint inspections and/or inspector leniency on wet days (a behavioral, not food-safety, channel).",
+      "spec": "LPM: fail = beta*precipitation_sum + estab FE + month FE + controls. SE clustered by date.",
+      "treatment_var": "precipitation_sum (mm)",
+      "identification": "Same within-establishment design; precipitation plausibly exogenous to latent food safety but may shift inspection composition.",
+      "must_pass_diagnostic": "Composition test: does precipitation predict inspection_type share / daily inspection count? If yes, channel is selection not safety — report as mechanism, not causal food-safety effect.",
+      "feasible": true,
+      "primary": false
+    },
+    {
+      "id": "H3",
+      "statement": "The temperature-fail relationship is NONLINEAR, concentrated in extreme heat (e.g. >30 degC) where refrigeration/cold-holding fails.",
+      "spec": "LPM with temperature bins (<0,0-10,10-20,20-25,25-30,>30) or restricted cubic spline; estab + month FE; SE clustered by date.",
+      "treatment_var": "temperature bins",
+      "identification": "Same as H1; tests functional form.",
+      "must_pass_diagnostic": "Joint F-test that bin coefficients are equal (linearity) vs monotone heat gradient; extreme-heat bin coefficient sign + significance.",
+      "feasible": true,
+      "primary": false
+    },
+    {
+      "id": "H4",
+      "statement": "The temperature effect is larger for high-risk, food-handling-intensive establishments (Risk 1, restaurants) than for low-risk types (daycares, schools).",
+      "spec": "H1 spec + temp x Risk1 and temp x restaurant interactions; estab + month FE; SE clustered by date.",
+      "treatment_var": "temperature_2m_mean x risk/facility",
+      "identification": "Heterogeneity within the H1 design; interaction identified off differential within-group temperature response.",
+      "must_pass_diagnostic": "Interaction sign consistent with mechanism; main effect robust to dropping any single facility type.",
+      "feasible": true,
+      "primary": false
+    },
+    {
+      "id": "H5",
+      "statement": "Higher inspection-day temperature raises the COUNT of cited violations (intensive-margin analogue of H1).",
+      "spec": "Poisson with establishment FE (or NB), month FE, controls; SE clustered by date.",
+      "treatment_var": "temperature_2m_mean (per +10 degC)",
+      "identification": "Same as H1 on a count outcome; corroborates the binary result on the intensive margin.",
+      "must_pass_diagnostic": "Same placebo as H1; overdispersion check (Poisson vs NB).",
+      "feasible": true,
+      "primary": false
+    }
+  ],
+  "rejected_designs": [
+    {"design": "RDD at a temperature cutoff", "reason": "no behavioral/policy assignment rule discontinuous in temperature; weather is continuous with no cutoff."},
+    {"design": "Difference-in-differences", "reason": "no discrete treatment switching on at a date for a treated subgroup; weather is continuous and universal."},
+    {"design": "Any spec with violations / results_raw / violation_count on the RHS", "reason": "outcome-derived (leakage); violation_count is a secondary outcome only."}
+  ],
+  "chosen_primary": "H1",
+  "why_primary": "H1 has the cleanest identification (within-establishment, within-month variation in plausibly-exogenous inspection-day temperature), the strongest panel support (19,611 establishments with >=2 inspections; 11,967 with >=5), a clear physical mechanism (thermal stress on cold-holding and microbial growth), and its central threat (seasonal/scheduling confounding) is directly falsifiable via the placebo-weather and seasonality-robustness diagnostics. H2-H5 are pre-registered extensions/robustness that share H1's design."
+}

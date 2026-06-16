@@ -1,0 +1,26 @@
+\begin{tabular}{lccc}
+\hline\hline
+\multicolumn{4}{l}{\emph{Panel A. Primary effect under coarser clustering (weather is autocorrelated)}}\\
+Clustering $\rightarrow$ & Date & ISO-week & Year-month \\
+ & (G=1969) & (G=415) & (G=96) \\
+\hline
+Primary (Estab+M+Y), full sample & 0.443 (0.151) & 0.443 (0.224) & 0.443 (0.239) \\
+Scheduled (non-complaint) only & 0.674* (0.053) & 0.674* (0.096) & 0.674 (0.101) \\
+\hline
+\multicolumn{4}{l}{\emph{Panel B. Post hoc ``significant'' subsamples lose significance under correct inference}}\\
+Canvass-only & 0.853** (0.031) & 0.853* (0.051) & 0.853* (0.069) \\
+Risk 1 (high) only & 0.575* (0.061) & 0.575 (0.102) & 0.575 (0.102) \\
+Canvass-only wild-cluster bootstrap p (month) & \multicolumn{3}{c}{0.082} \\
+\hline
+\multicolumn{4}{l}{\emph{Panel C. Secondary outcome: within-establishment violation count (NOT robust)}}\\
+asinh(violations), no-Type FE & 0.017** (0.011) & 0.017** (0.032) & 0.017* (0.051) \\
+violations (level), no-Type FE & 0.062** (0.022) & 0.062* (0.057) & 0.062* (0.083) \\
+\multicolumn{4}{l}{\footnotesize \quad Count-family multiplicity: 12 tests, min p=0.007, Bonferroni=0.084 ($>$.05).}\\
+\hline
+\multicolumn{4}{l}{\emph{Panel D. Heterogeneity (H4, fail outcome): significant in baseline but NOT robust}}\\
+$\times$ Restaurant$^\dagger$ (vs other facility) & 0.863*** (0.004) & 0.863*** (0.005) & 0.863** (0.014) \\
+$\times$ Risk~1 (vs lower risk) & -0.176 (0.585) & -0.176 (0.604) & -0.176 (0.595) \\
+\multicolumn{4}{l}{\footnotesize $^\dagger$Pre-registered leave-one-facility-out check FAILS: restaurant coef ranges 0.43--0.86 ppt, max p=0.171 (n.s.\ when Schools excluded). Stars notwithstanding, demoted to non-robust.}\\
+\hline\hline
+\multicolumn{4}{p{0.92\linewidth}}{\footnotesize Cells: coefficient with significance stars and (p-value). Panel A dep.\ var.\ \emph{fail}; B \emph{fail}; C as labeled (asinh / level of violation count); D interaction terms, dep.\ var.\ \emph{fail}. Panel A/B/D coefficients in percentage points. Coarser clusters guard against serial correlation in weather across adjacent days. *** p$<$.01, ** p$<$.05, * p$<$.1.}\\
+\end{tabular}

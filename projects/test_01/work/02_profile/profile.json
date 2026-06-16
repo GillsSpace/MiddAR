@@ -1,0 +1,632 @@
+{
+  "seed": 20260613,
+  "n_rows": 138896,
+  "sha256_parquet": "e1333f5928d5e944ef2ad735f65000d003e4fb196617889d3389218177762705",
+  "date_range": [
+    "2018-07-03",
+    "2026-06-12"
+  ],
+  "schema": [
+    {
+      "name": "inspection_id",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 138896
+    },
+    {
+      "name": "dba_name",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 20543
+    },
+    {
+      "name": "facility_type",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 749,
+      "pct_missing": 0.539,
+      "n_unique": 308
+    },
+    {
+      "name": "risk",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 32,
+      "pct_missing": 0.023,
+      "n_unique": 4
+    },
+    {
+      "name": "address",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 26340
+    },
+    {
+      "name": "zip",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 9,
+      "pct_missing": 0.006,
+      "n_unique": 109
+    },
+    {
+      "name": "inspection_date",
+      "dtype": "object",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 1983
+    },
+    {
+      "name": "inspection_type",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 18
+    },
+    {
+      "name": "results",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 7
+    },
+    {
+      "name": "violations",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 41216,
+      "pct_missing": 29.674,
+      "n_unique": 96745
+    },
+    {
+      "name": "latitude",
+      "dtype": "float64",
+      "unit": "",
+      "n_missing": 491,
+      "pct_missing": 0.354,
+      "n_unique": 14728
+    },
+    {
+      "name": "longitude",
+      "dtype": "float64",
+      "unit": "",
+      "n_missing": 491,
+      "pct_missing": 0.354,
+      "n_unique": 14728
+    },
+    {
+      "name": "results_raw",
+      "dtype": "str",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 7
+    },
+    {
+      "name": "violation_count",
+      "dtype": "int64",
+      "unit": "",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 36
+    },
+    {
+      "name": "temperature_2m_max",
+      "dtype": "float64",
+      "unit": "degC",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 427
+    },
+    {
+      "name": "temperature_2m_min",
+      "dtype": "float64",
+      "unit": "degC",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 392
+    },
+    {
+      "name": "temperature_2m_mean",
+      "dtype": "float64",
+      "unit": "degC",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 415
+    },
+    {
+      "name": "apparent_temperature_mean",
+      "dtype": "float64",
+      "unit": "degC",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 499
+    },
+    {
+      "name": "precipitation_sum",
+      "dtype": "float64",
+      "unit": "mm",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 232
+    },
+    {
+      "name": "rain_sum",
+      "dtype": "float64",
+      "unit": "mm",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 226
+    },
+    {
+      "name": "snowfall_sum",
+      "dtype": "float64",
+      "unit": "cm",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 62
+    },
+    {
+      "name": "precipitation_hours",
+      "dtype": "float64",
+      "unit": "hours",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 25
+    },
+    {
+      "name": "windspeed_10m_max",
+      "dtype": "float64",
+      "unit": "km/h",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 351
+    },
+    {
+      "name": "windgusts_10m_max",
+      "dtype": "float64",
+      "unit": "km/h",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 177
+    }
+  ],
+  "numeric_distributions": {
+    "temperature_2m_max": {
+      "mean": 14.952,
+      "std": 10.734,
+      "min": -22.5,
+      "p1": -9.0,
+      "p5": -2.5,
+      "p25": 6.0,
+      "median": 15.8,
+      "p75": 24.2,
+      "p95": 30.5,
+      "p99": 33.3,
+      "max": 37.4,
+      "n_missing": 0
+    },
+    "temperature_2m_min": {
+      "mean": 6.928,
+      "std": 9.997,
+      "min": -32.5,
+      "p1": -17.2,
+      "p5": -9.8,
+      "p25": -0.6,
+      "median": 6.9,
+      "p75": 16.1,
+      "p95": 21.3,
+      "p99": 23.5,
+      "max": 25.9,
+      "n_missing": 0
+    },
+    "temperature_2m_mean": {
+      "mean": 10.847,
+      "std": 10.185,
+      "min": -28.0,
+      "p1": -12.1,
+      "p5": -5.9,
+      "p25": 2.6,
+      "median": 11.1,
+      "p75": 20.2,
+      "p95": 25.1,
+      "p99": 27.7,
+      "max": 30.9,
+      "n_missing": 0
+    },
+    "apparent_temperature_mean": {
+      "mean": 8.263,
+      "std": 12.702,
+      "min": -36.4,
+      "p1": -18.8,
+      "p5": -11.8,
+      "p25": -2.1,
+      "median": 7.8,
+      "p75": 19.7,
+      "p95": 27.1,
+      "p99": 30.5,
+      "max": 34.9,
+      "n_missing": 0
+    },
+    "precipitation_sum": {
+      "mean": 2.957,
+      "std": 6.119,
+      "min": 0.0,
+      "p1": 0.0,
+      "p5": 0.0,
+      "p25": 0.0,
+      "median": 0.1,
+      "p75": 2.8,
+      "p95": 16.4,
+      "p99": 29.8,
+      "max": 58.1,
+      "n_missing": 0
+    },
+    "rain_sum": {
+      "mean": 2.723,
+      "std": 6.009,
+      "min": 0.0,
+      "p1": 0.0,
+      "p5": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 2.2,
+      "p95": 15.8,
+      "p99": 29.8,
+      "max": 58.1,
+      "n_missing": 0
+    },
+    "snowfall_sum": {
+      "mean": 0.164,
+      "std": 0.836,
+      "min": 0.0,
+      "p1": 0.0,
+      "p5": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "p95": 0.84,
+      "p99": 3.78,
+      "max": 13.65,
+      "n_missing": 0
+    },
+    "precipitation_hours": {
+      "mean": 3.624,
+      "std": 5.069,
+      "min": 0.0,
+      "p1": 0.0,
+      "p5": 0.0,
+      "p25": 0.0,
+      "median": 1.0,
+      "p75": 6.0,
+      "p95": 15.0,
+      "p99": 21.0,
+      "max": 24.0,
+      "n_missing": 0
+    },
+    "windspeed_10m_max": {
+      "mean": 24.154,
+      "std": 7.867,
+      "min": 7.1,
+      "p1": 10.3,
+      "p5": 12.7,
+      "p25": 18.4,
+      "median": 23.3,
+      "p75": 29.0,
+      "p95": 39.0,
+      "p99": 44.3,
+      "max": 57.4,
+      "n_missing": 0
+    },
+    "windgusts_10m_max": {
+      "mean": 41.087,
+      "std": 11.866,
+      "min": 16.6,
+      "p1": 20.5,
+      "p5": 24.8,
+      "p25": 32.4,
+      "median": 39.2,
+      "p75": 48.2,
+      "p95": 63.4,
+      "p99": 73.4,
+      "max": 112.0,
+      "n_missing": 0
+    },
+    "violation_count": {
+      "mean": 3.528,
+      "std": 3.975,
+      "min": 0.0,
+      "p1": 0.0,
+      "p5": 0.0,
+      "p25": 0.0,
+      "median": 2.0,
+      "p75": 5.0,
+      "p95": 12.0,
+      "p99": 17.0,
+      "max": 40.0,
+      "n_missing": 0
+    },
+    "latitude": {
+      "mean": 41.881,
+      "std": 0.081,
+      "min": 41.645,
+      "p1": 41.685,
+      "p5": 41.725,
+      "p25": 41.833,
+      "median": 41.892,
+      "p75": 41.939,
+      "p95": 41.997,
+      "p99": 42.012,
+      "max": 42.021,
+      "n_missing": 491
+    },
+    "longitude": {
+      "mean": -87.676,
+      "std": 0.058,
+      "min": -87.907,
+      "p1": -87.907,
+      "p5": -87.778,
+      "p25": -87.707,
+      "median": -87.666,
+      "p75": -87.635,
+      "p95": -87.598,
+      "p99": -87.552,
+      "max": -87.525,
+      "n_missing": 491
+    }
+  },
+  "categorical_top": {
+    "results": {
+      "pass": 60144,
+      "pass_w_conditions": 29811,
+      "fail": 26511,
+      "out_of_business": 10412,
+      "no_entry": 8757,
+      "not_ready": 3228,
+      "business_not_located": 33
+    },
+    "results_raw": {
+      "Pass": 60144,
+      "Pass w/ Conditions": 29811,
+      "Fail": 26511,
+      "Out of Business": 10412,
+      "No Entry": 8757,
+      "Not Ready": 3228,
+      "Business Not Located": 33
+    },
+    "inspection_type": {
+      "Canvass": 69599,
+      "License": 19519,
+      "Canvass Re-Inspection": 16734,
+      "Complaint": 13482,
+      "Complaint Re-Inspection": 5721,
+      "Non-Inspection": 5495,
+      "License Re-Inspection": 4770,
+      "Short Form Complaint": 2947,
+      "Recent Inspection": 289,
+      "Suspected Food Poisoning": 253,
+      "Suspected Food Poisoning Re-inspection": 56,
+      "Not Ready": 15
+    },
+    "risk": {
+      "Risk 1 (High)": 109163,
+      "Risk 2 (Medium)": 21562,
+      "Risk 3 (Low)": 8059,
+      "All": 80,
+      "nan": 32
+    },
+    "facility_type": {
+      "Restaurant": 96571,
+      "Grocery Store": 14663,
+      "School": 8630,
+      "Children's Services Facility": 4893,
+      "Daycare Above and Under 2 Years": 2138,
+      "Bakery": 1979,
+      "Long Term Care": 1302,
+      "Daycare (2 - 6 Years)": 1018,
+      "Catering": 887,
+      "Mobile Food Preparer": 763,
+      "nan": 749,
+      "Liquor": 592
+    }
+  },
+  "outcome_definition": {
+    "outcome": "fail = 1 if results=='fail' else 0, restricted to substantive inspections",
+    "substantive_results": [
+      "pass",
+      "pass_w_conditions",
+      "fail"
+    ],
+    "dropped_nonoutcome_results": [
+      "out_of_business",
+      "no_entry",
+      "not_ready",
+      "business_not_located"
+    ],
+    "n_substantive": 116466,
+    "n_dropped_nonoutcome": 22430,
+    "fail_rate_substantive": 0.2276,
+    "fail_rate_overall": 0.1909
+  },
+  "violation_count_by_results": {
+    "business_not_located": {
+      "mean": 0.0,
+      "median": 0.0,
+      "n": 33
+    },
+    "fail": {
+      "mean": 7.28,
+      "median": 6.0,
+      "n": 26511
+    },
+    "no_entry": {
+      "mean": 0.29,
+      "median": 0.0,
+      "n": 8757
+    },
+    "not_ready": {
+      "mean": 0.11,
+      "median": 0.0,
+      "n": 3228
+    },
+    "out_of_business": {
+      "mean": 0.01,
+      "median": 0.0,
+      "n": 10412
+    },
+    "pass": {
+      "mean": 2.17,
+      "median": 2.0,
+      "n": 60144
+    },
+    "pass_w_conditions": {
+      "mean": 5.48,
+      "median": 5.0,
+      "n": 29811
+    }
+  },
+  "violation_count_zero": {
+    "pct_zero_overall": 29.67,
+    "pct_zero_among_pass": 29.55,
+    "pct_zero_among_fail": 2.56
+  },
+  "leakage_flags": [
+    {
+      "variable": "violations",
+      "verdict": "LEAKAGE",
+      "evidence": "free-text list of cited violations; present for 70.3% of rows; present in 97.4% of fails vs 70.5% of passes; mechanically generated by the inspection result.",
+      "action": "EXCLUDE from RHS; outcome-derived."
+    },
+    {
+      "variable": "results_raw",
+      "verdict": "LEAKAGE",
+      "evidence": "identical to results in 78.5% of rows; it IS the outcome.",
+      "action": "EXCLUDE; it is the outcome."
+    },
+    {
+      "variable": "violation_count",
+      "verdict": "OUTCOME / PARTIAL-LEAKAGE",
+      "evidence": "mean violation_count = 7.3 for fails vs 2.6 for non-fails; it is a downstream count of citations, i.e. an alternative outcome, NOT a covariate.",
+      "action": "USE ONLY as an alternative (secondary) outcome, never as a regressor."
+    },
+    {
+      "variable": "temperature_2m_max",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "temperature_2m_min",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "temperature_2m_mean",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "apparent_temperature_mean",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "precipitation_sum",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "rain_sum",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "snowfall_sum",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "precipitation_hours",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "windspeed_10m_max",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    },
+    {
+      "variable": "windgusts_10m_max",
+      "verdict": "EXOGENOUS-CANDIDATE",
+      "evidence": "daily weather keyed to inspection date; plausibly unrelated to a given establishment's latent food-safety conditions; shared by all inspections on the same calendar day.",
+      "action": "Eligible RHS / treatment, with seasonality + date controls and day-clustered SE."
+    }
+  ],
+  "weather_variation": {
+    "unique_weather_days": 1983,
+    "inspections_per_day_mean": 70.0,
+    "inspections_per_day_median": 73.0,
+    "inspections_per_day_max": 125,
+    "max_within_day_weather_std": 0.0,
+    "note": "weather is identical for all inspections sharing a calendar date (within-day std=0) -> treatment varies only across days; MUST cluster SE by date (effective N = n_days, not n_inspections)."
+  },
+  "repeat_structure": {
+    "n_unique_establishments_dba_address": 23737,
+    "pct_inspections_in_repeat_estabs": 97.0,
+    "estabs_with_ge2_inspections": 19611,
+    "estabs_with_ge5_inspections": 11967,
+    "median_inspections_per_estab": 5.0,
+    "max_inspections_per_estab": 59,
+    "note": "establishment FE feasible: most inspections are in repeatedly-inspected establishments; within-establishment weather variation across inspection dates identifies a weather effect net of fixed location/cuisine/management quality."
+  },
+  "supported_designs": [
+    {
+      "design": "Cross-sectional / pooled OLS-LPM (or logit): fail ~ weather + seasonality + zip + facility/risk FE",
+      "feasible": true,
+      "identification": "weather-on-inspection-day as-good-as-random conditional on season/date; exogeneity of weather to latent establishment conditions.",
+      "diagnostic": "day-clustered SE; seasonality robustness (month-of-year & DOY controls); placebo with NEXT-period weather."
+    },
+    {
+      "design": "Establishment fixed-effects LPM: within-estab variation in weather across inspection dates",
+      "feasible": true,
+      "identification": "compares the SAME establishment inspected on hot vs cold/wet days; removes all time-invariant confounders.",
+      "diagnostic": "two-way (estab + month) FE; cluster by date; test sensitivity to inspection_type composition."
+    },
+    {
+      "design": "Inspector/route-style heat effect on leniency (violation_count as secondary outcome)",
+      "feasible": true,
+      "identification": "weather affects inspection stringency/throughput.",
+      "diagnostic": "poisson/NB; same controls; report as secondary."
+    },
+    {
+      "design": "RDD on a temperature threshold (e.g. freezing 0C)",
+      "feasible": false,
+      "identification": "no policy/behavioral discontinuity at a known temperature cutoff; weather is continuous with no assignment rule.",
+      "diagnostic": "n/a \u2014 REJECTED, no credible running-variable cutoff."
+    },
+    {
+      "design": "DiD",
+      "feasible": false,
+      "identification": "no discrete treatment turning on at a date for a treated subgroup; weather is continuous and universal.",
+      "diagnostic": "n/a \u2014 REJECTED."
+    }
+  ],
+  "recommended_primary": "Establishment-FE linear probability model of inspection FAIL on inspection-day temperature (and precipitation), with month FE and SE clustered by calendar date; pooled LPM with season/zip/facility controls as the headline if FE sample too thin."
+}

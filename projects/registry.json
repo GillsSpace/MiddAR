@@ -1,0 +1,24 @@
+{
+  "experiments": [
+    {
+      "name": "test_02",
+      "framework": "gated",
+      "created": "2026-06-16T11:57:58-04:00",
+      "idea": "Do same-day temperature shocks affect the probability a Chicago food inspection results in a failure?",
+      "inputs": [
+        {
+          "name": "chicago_inspections_weather.parquet",
+          "source": "/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather.parquet",
+          "sha256": "e1333f5928d5e944ef2ad735f65000d003e4fb196617889d3389218177762705",
+          "bytes": 45053984
+        },
+        {
+          "name": "chicago_inspections_weather_sample.csv",
+          "source": "/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather_sample.csv",
+          "sha256": "2bcbd0543c96f4c0d62061a3fbc0bd8291e7261802d4a9e64dd9ee8846cea337",
+          "bytes": 931710
+        }
+      ]
+    }
+  ]
+}

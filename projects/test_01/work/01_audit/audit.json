@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "path": "data/raw/chicago_inspections_weather.parquet",
+      "bytes": 45053984,
+      "sha256": "e1333f5928d5e944ef2ad735f65000d003e4fb196617889d3389218177762705"
+    },
+    {
+      "path": "data/raw/chicago_inspections_weather_sample.csv",
+      "bytes": 931710,
+      "sha256": "2bcbd0543c96f4c0d62061a3fbc0bd8291e7261802d4a9e64dd9ee8846cea337"
+    }
+  ],
+  "n_rows": 138896,
+  "global_seed": 20260613,
+  "packages": {
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "statsmodels": "0.14.6",
+    "matplotlib": "3.11.0",
+    "pyarrow": "24.0.0",
+    "linearmodels": "7.0",
+    "pyhdfe": "0.2.0"
+  }
+}

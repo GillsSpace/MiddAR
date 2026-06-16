@@ -1,0 +1,63 @@
+{
+  "project": "chicago_inspections_weather_paper",
+  "date": "2026-06-13",
+  "global_seed": 20260613,
+  "gates": [
+    {
+      "gate": "audit",
+      "status": "PASS",
+      "evidence": "replication/manifest.json + work/01_audit/audit.json; 2 inputs SHA-256 hashed; schema 138896x24; seed + package versions recorded."
+    },
+    {
+      "gate": "profile",
+      "status": "PASS",
+      "evidence": "work/02_profile/profile.{md,json}; leakage scan flagged violations/results_raw/violation_count as outcome-derived; within-day weather variance=0 -> date clustering mandated; 19,611 estab with >=2 inspections support estab FE."
+    },
+    {
+      "gate": "design",
+      "status": "PASS",
+      "evidence": "work/03_design/hypotheses.json; 5 pre-registered hypotheses + must-pass diagnostics; RDD/DiD rejected; primary=H1."
+    },
+    {
+      "gate": "estimate",
+      "status": "PASS",
+      "evidence": "paper/tables/table1_main.tex + 2 figures; primary temp effect 0.443 ppt/10C (p=0.1507); diagnostics (placebo, seasonality, balance) run; claims logged."
+    },
+    {
+      "gate": "robustness",
+      "status": "PASS",
+      "evidence": "13 specs (12/13 positive, 2/13 sig@.10); coarse clustering, wild bootstrap, multiplicity (Bonferroni min-p 0.4056); H4 drop-one-facility FAILS (pass=False); count family Bonferroni 0.084."
+    },
+    {
+      "gate": "referee",
+      "status": "PASS",
+      "evidence": "3 rounds of BLOCKING objections (8+5+3) all resolved + computationally verified; confirmatory 4th pass returned NO remaining BLOCKING. Failed H4 diagnostic reported honestly."
+    },
+    {
+      "gate": "write",
+      "status": "PASS",
+      "evidence": "paper/main.tex drafted from on-disk artifacts; orphan-number check PASS (85 numerals, 0 orphans)."
+    },
+    {
+      "gate": "reproduce",
+      "status": "PASS",
+      "evidence": "replication/run_all.sh regenerates manifest+claims+tables+figures+PDF from data/raw in one command; two independent clean-copy runs produced byte-identical tables; estimator-equivalence max delta 8e-05 ppt; PDF compiled."
+    }
+  ],
+  "headline": {
+    "primary_temp_ppt_per10C": 0.443,
+    "primary_ci_t": [
+      -0.161,
+      1.047
+    ],
+    "primary_p": 0.1507,
+    "bounded_null_upper_ppt": 1.189,
+    "bounded_null_pct_of_baserate": 5.22,
+    "conclusion": "No robust effect of inspection-day weather on inspection failure; naive gradient is seasonal/compositional confounding."
+  },
+  "blocking_converted_to_limitations": [
+    "Identification ceiling: weather constant within day -> Estab+Day FE infeasible (collinear); cannot net out arbitrary daily shocks. Reported as a prominent limitation.",
+    "Composition channel: inspection type is a temperature-driven mediator; preferred primary is a reduced-form total effect bundling safety + selection. Scheduled-only subsample isolates the non-selection channel and is also null."
+  ],
+  "weakest_point": "The bounded null is underpowered against modest effects: the 95% CI upper bound (+1.19 ppt/10C, 5.22% of base rate) does not exclude a small positive effect; identification also cannot rule out correlated within-day shocks. A human should check the scheduled-only estimate (0.674 ppt, p=0.053 date / 0.10 month) \u2014 the closest the data come to a positive effect."
+}

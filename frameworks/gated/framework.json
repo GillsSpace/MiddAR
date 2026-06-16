@@ -1,0 +1,17 @@
+{
+  "name": "gated",
+  "title": "Framework 1 — gated empirical-economics pipeline",
+  "description": "Audit->profile->design->estimate->robustness->referee->write->reproduce, with raw-data immutability, provenance-checked numbers, and an adversarial referee subagent.",
+  "skeleton_dirs": [
+    "work/01_audit",
+    "work/02_profile",
+    "work/03_design",
+    "work/04_analysis",
+    "work/05_robustness",
+    "paper/sections",
+    "paper/tables",
+    "paper/figures",
+    "replication",
+    "validation"
+  ]
+}

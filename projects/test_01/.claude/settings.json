@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)", "Bash(pip:*)", "Bash(pdflatex:*)", "Bash(latexmk:*)",
+      "Bash(bash replication/run_all.sh)",
+      "Read(./**)",
+      "Write(./work/**)", "Write(./paper/**)", "Write(./replication/**)", "Write(./validation/**)",
+      "Edit(./work/**)", "Edit(./paper/**)", "Edit(./replication/**)", "Edit(./validation/**)"
+    ],
+    "deny": ["Write(./data/**)", "Edit(./data/**)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "bash ./.claude/hooks/protect_raw.sh" }] }
+    ]
+  }
+}
