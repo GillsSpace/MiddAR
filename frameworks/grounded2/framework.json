@@ -1,0 +1,26 @@
+{
+  "name": "grounded2",
+  "title": "Framework 3 — grounded2 (grounded + contribution + explore/confirm + data augmentation + auto-introspection)",
+  "description": "Extends grounded with an importance-maximizer (advisor subagent + frame & pivot-check gates) to counter the referee's modesty-ratchet, an explore->confirm discovery path, identification-first ranked design, mid-study data augmentation via per-dataset sealing, and a mandatory introspector that writes introspection.md at the end. source->audit->profile->frame->explore->design->literature->estimate->pivot->robustness->referee->write->reproduce->introspect.",
+  "supports_no_data": true,
+  "supports_augment": true,
+  "seal_mode": "per-dataset",
+  "uses_api_keys": true,
+  "skeleton_dirs": [
+    "work/00_source",
+    "work/01_audit",
+    "work/02_profile",
+    "work/03_frame",
+    "work/04_explore",
+    "work/05_design",
+    "work/06_literature",
+    "work/07_analysis",
+    "work/08_pivot",
+    "work/09_robustness",
+    "paper/sections",
+    "paper/tables",
+    "paper/figures",
+    "replication",
+    "validation"
+  ]
+}

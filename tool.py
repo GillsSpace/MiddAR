@@ -3,26 +3,34 @@
 
 This is the CONTROL PLANE. You run it from MiddAR/; you do NOT run Claude here.
 Each experiment is a sealed runtime under projects/<name>/ with its own Claude
-context, config, agents, hooks, and a copied (immutable) dataset.
+context, config, agents, hooks, and its own dataset in data/raw/.
+
+Two main commands:
+    gen <name> [--framework gated] [--idea TEXT]
+        Generate the project folder structure from a framework.
+        Leaves data/raw/ EMPTY — you copy this experiment's dataset in next.
+
+    run <name>
+        Finish setup (verify data is present, hash it, finalize provenance) and
+        print the command + prompt to paste into Claude Code to start working.
+
+Typical flow:
+    python tool.py gen exp_03 --framework gated --idea "Does X affect Y?"
+    cp /path/to/your_dataset.parquet projects/exp_03/data/raw/
+    python tool.py run exp_03
+
+Helpers:
+    python tool.py list          # experiments + status
+    python tool.py frameworks    # available frameworks
+    python tool.py verify <name> # re-run replication/run_all.sh
+    python tool.py clean <name>  # delete generated artifacts (keep config + data)
 
 Layout:
     MiddAR/
       tool.py                 <- this file
       frameworks/<fw>/        <- versioned instruction-sets (edit to iterate)
       projects/<name>/        <- one sealed experiment per dir
-      projects/registry.json  <- index of experiments (created on first `new`)
-
-Commands:
-    tool.py new <name> [--framework gated] [--data PATH ...] [--idea TEXT] [--force]
-    tool.py list
-    tool.py frameworks
-    tool.py verify <name>
-    tool.py clean <name> [--yes]
-
-Examples:
-    python tool.py new test_02 --data ../data --idea "Do temperature shocks affect inspection pass rates?"
-    python tool.py list
-    python tool.py verify test_01
+      projects/registry.json  <- index of experiments
 """
 from __future__ import annotations
 
@@ -39,6 +47,24 @@ HERE = Path(__file__).resolve().parent
 FRAMEWORKS_DIR = HERE / "frameworks"
 PROJECTS_DIR = HERE / "projects"
 REGISTRY = PROJECTS_DIR / "registry.json"
+API_KEYS_MASTER = HERE / "api_keys.env"  # single user-editable master; copied into each project
+
+API_KEYS_TEMPLATE = """\
+# MiddAR API keys — master file (control plane).
+# Edit this ONE file; `tool.py gen`/`run` copies it into each project so the
+# sealed-context model can read keys it needs for API data pulls.
+#
+# Format: KEY=VALUE, one per line. Lines starting with # are ignored.
+# The framework instructs the model to READ these and NEVER print, log, or
+# commit a key value. Leave a line blank/absent if you don't have that key.
+#
+# Keep this file out of version control (add `api_keys.env` to .gitignore).
+
+# CENSUS_API_KEY=
+# FRED_API_KEY=
+# BLS_API_KEY=
+# BEA_API_KEY=
+"""
 
 
 # --- small helpers ----------------------------------------------------------
@@ -70,6 +96,17 @@ def save_registry(reg: dict) -> None:
     REGISTRY.write_text(json.dumps(reg, indent=2) + "\n")
 
 
+def upsert_experiment(name: str, **fields) -> None:
+    reg = load_registry()
+    exps = [e for e in reg.get("experiments", []) if e.get("name") != name]
+    existing = next((e for e in reg.get("experiments", []) if e.get("name") == name), {})
+    existing.update(name=name, **fields)
+    exps.append(existing)
+    exps.sort(key=lambda e: e.get("created", ""))
+    reg["experiments"] = exps
+    save_registry(reg)
+
+
 def list_frameworks() -> list[str]:
     if not FRAMEWORKS_DIR.is_dir():
         return []
@@ -83,52 +120,82 @@ def framework_meta(name: str) -> dict:
     return json.loads(meta_path.read_text())
 
 
-# --- commands ---------------------------------------------------------------
-def cmd_frameworks(_: argparse.Namespace) -> None:
-    fws = list_frameworks()
-    if not fws:
-        print("No frameworks found under", FRAMEWORKS_DIR)
+def scan_raw(proj: Path) -> list[dict]:
+    """Provenance records for whatever is currently in data/raw/ (excludes seal files)."""
+    raw = proj / "data" / "raw"
+    files = sorted(f for f in raw.rglob("*") if f.is_file() and f.name != ".sealed") if raw.is_dir() else []
+    return [{"name": str(f.relative_to(raw)), "sha256": sha256(f), "bytes": f.stat().st_size} for f in files]
+
+
+def ensure_master_keys() -> None:
+    """Create the master api_keys.env template on first use."""
+    if not API_KEYS_MASTER.exists():
+        API_KEYS_MASTER.write_text(API_KEYS_TEMPLATE)
+
+
+def copy_keys_into(proj: Path) -> None:
+    """Sync the master api_keys.env into a project so the sealed-context model can read it."""
+    ensure_master_keys()
+    shutil.copy2(API_KEYS_MASTER, proj / "api_keys.env")
+
+
+def key_names(path: Path) -> list[str]:
+    """Names (not values) of keys set to a non-empty value in an api_keys.env file."""
+    names = []
+    if path.exists():
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                if v.strip():
+                    names.append(k.strip())
+    return names
+
+
+# --- sealing: global (gated/grounded) vs per-dataset (grounded2) -------------
+def dataset_dirs(proj: Path) -> list[Path]:
+    """Top-level dataset subdirs under data/raw/ (per-dataset seal layout)."""
+    raw = proj / "data" / "raw"
+    return sorted(d for d in raw.iterdir() if d.is_dir()) if raw.is_dir() else []
+
+
+def normalize_flat_into_primary(proj: Path) -> None:
+    """For per-dataset frameworks: move any files placed directly in data/raw/ into
+    data/raw/primary/ so every dataset lives in its own sealable subdir."""
+    raw = proj / "data" / "raw"
+    if not raw.is_dir():
         return
-    for name in fws:
-        meta = framework_meta(name)
-        print(f"{name:12s} {meta.get('title', '')}")
-        if meta.get("description"):
-            print(f"             {meta['description']}")
+    flat = [f for f in raw.iterdir() if f.is_file() and f.name != ".sealed"]
+    if flat:
+        primary = raw / "primary"
+        primary.mkdir(exist_ok=True)
+        for f in flat:
+            shutil.move(str(f), str(primary / f.name))
 
 
-def cmd_list(_: argparse.Namespace) -> None:
-    reg = {e["name"]: e for e in load_registry().get("experiments", [])}
-    # union registry with any project dirs on disk (e.g. created by setup.sh, pre-registry)
-    on_disk = {p.name for p in PROJECTS_DIR.iterdir() if p.is_dir()} if PROJECTS_DIR.is_dir() else set()
-    names = sorted(set(reg) | on_disk)
-    if not names:
-        print("No experiments yet. Create one:  python tool.py new <name> --data <path>")
-        return
-    print(f"{'NAME':16s} {'FRAMEWORK':10s} {'CREATED':20s} STATUS")
-    for name in names:
-        proj = PROJECTS_DIR / name
-        e = reg.get(name, {})
-        fw = e.get("framework") or ("untracked" if proj.exists() else "?")
-        status = "missing" if not proj.exists() else gate_status(proj)
-        print(f"{name:16s} {fw:10s} {e.get('created', '-')[:19]:20s} {status}")
+def seal_dataset(proj: Path, dataset_dir: Path) -> dict:
+    """Write data/raw/<dataset>/.sealed for one dataset; returns its record."""
+    files = sorted(f for f in dataset_dir.rglob("*") if f.is_file() and f.name != ".sealed")
+    recs = [{"name": str(f.relative_to(dataset_dir)), "sha256": sha256(f), "bytes": f.stat().st_size} for f in files]
+    seal = {"sealed": now_iso(), "dataset": dataset_dir.name, "files": recs}
+    (dataset_dir / ".sealed").write_text(json.dumps(seal, indent=2) + "\n")
+    return {"dataset": dataset_dir.name, "files": recs}
 
 
-def gate_status(proj: Path) -> str:
-    """Best-effort status from validation/report.json, else infer from disk."""
-    report = proj / "validation" / "report.json"
-    if report.exists():
-        try:
-            gates = json.loads(report.read_text()).get("gates", [])
-            passed = sum(1 for g in gates if g.get("status") == "PASS")
-            return f"{passed}/{len(gates)} gates PASS" if gates else "report present"
-        except (json.JSONDecodeError, OSError):
-            return "report unreadable"
-    if (proj / "paper" / "main.tex").exists():
-        return "drafting"
-    return "scaffolded"
+def seal_all_unsealed(proj: Path) -> list[str]:
+    """Seal every dataset subdir that has data but no .sealed yet. Returns sealed names."""
+    sealed = []
+    for d in dataset_dirs(proj):
+        if (d / ".sealed").exists():
+            continue
+        if any(f.is_file() and f.name != ".sealed" for f in d.rglob("*")):
+            seal_dataset(proj, d)
+            sealed.append(d.name)
+    return sealed
 
 
-def cmd_new(args: argparse.Namespace) -> None:
+# --- gen --------------------------------------------------------------------
+def cmd_gen(args: argparse.Namespace) -> None:
     name = args.name
     if "/" in name or name in {".", ".."}:
         die("name must be a plain directory name (no slashes)")
@@ -145,7 +212,7 @@ def cmd_new(args: argparse.Namespace) -> None:
     proj.mkdir(parents=True, exist_ok=True)
 
     # 1) copy framework files (CLAUDE.md, prompt.md, .claude/**) into the project.
-    #    framework.json is metadata for the control plane — don't ship it into the runtime.
+    #    framework.json is control-plane metadata — don't ship it into the runtime.
     for item in fw_dir.iterdir():
         if item.name == "framework.json":
             continue
@@ -155,83 +222,218 @@ def cmd_new(args: argparse.Namespace) -> None:
         else:
             shutil.copy2(item, dest)
 
-    # make hooks executable
     for hook in (proj / ".claude" / "hooks").glob("*.sh"):
         hook.chmod(0o755)
 
-    # 2) create the empty skeleton dirs the framework expects
+    # 2) create the empty skeleton dirs the framework expects, plus data/raw/
     for rel in meta.get("skeleton_dirs", []):
         (proj / rel).mkdir(parents=True, exist_ok=True)
-
-    # 3) copy data into the immutable data/raw/ (full isolation)
     raw = proj / "data" / "raw"
     raw.mkdir(parents=True, exist_ok=True)
-    copied = copy_data(args.data, raw)
+    if meta.get("seal_mode") == "per-dataset":
+        # per-dataset sealing needs each dataset in its own subdir — give the user an
+        # obvious place to paste files (left empty for a --no-data run).
+        (raw / "primary").mkdir(exist_ok=True)
 
-    # 4) provenance: EXPERIMENT.md + registry entry
-    write_experiment_md(proj, name, fw, args.idea, copied)
-    register(name, fw, args.idea, copied)
+    # 3) sync the master API keys into the project (if the framework uses them)
+    if meta.get("uses_api_keys"):
+        copy_keys_into(proj)
 
-    print(f"\nCreated experiment {name!r} (framework: {fw})")
-    print(f"  data/raw/   {len(copied)} file(s) copied" if copied else "  data/raw/   EMPTY — add data before running")
+    # 4) provenance stubs (data filled in at `run` time)
+    write_experiment_md(proj, name, fw, args.idea, inputs=[], launched=False)
+    upsert_experiment(name, framework=fw, created=now_iso(), idea=(args.idea or "").strip(), status="generated")
+
+    rel = proj.relative_to(HERE)
+    per_dataset = meta.get("seal_mode") == "per-dataset"
+    no_data_ok = meta.get("supports_no_data")
+    print(f"\nGenerated experiment {name!r} (framework: {fw})")
+    if meta.get("uses_api_keys"):
+        names = key_names(API_KEYS_MASTER)
+        print(f"  api_keys.env synced ({'keys: ' + ', '.join(names) if names else 'no keys set yet — edit ' + str(API_KEYS_MASTER)})")
     print(f"\nNext:")
-    print(f"  cd {proj.relative_to(Path.cwd()) if proj.is_relative_to(Path.cwd()) else proj}")
-    print(f"  claude")
-    print(f"  /agents          # confirm data-profiler, econometrician, referee")
-    print(f"  # then paste prompt.md as your first message")
+    if per_dataset:
+        print(f"  1. paste this experiment's dataset into: {rel}/data/raw/primary/")
+        print(f"     (one subdir per dataset — add more as {rel}/data/raw/<name>/; leave empty for --no-data)")
+    else:
+        print(f"  1. copy this experiment's dataset into:  {rel}/data/raw/")
+    if no_data_ok:
+        print(f"  2. python tool.py run {name}            (or `run {name} --no-data` to self-source)")
+    else:
+        print(f"  2. python tool.py run {name}")
+    print(f"     run seals your data automatically — no manual seal step needed.")
 
 
-def copy_data(data_args: list[str] | None, raw: Path) -> list[dict]:
-    """Copy each --data path (file or dir) into data/raw/. Returns provenance records."""
-    copied: list[dict] = []
-    for src_str in data_args or []:
-        src = Path(src_str).expanduser().resolve()
-        if not src.exists():
-            die(f"--data path not found: {src}")
-        files = [f for f in src.rglob("*") if f.is_file()] if src.is_dir() else [src]
-        for f in files:
-            dest = raw / f.name
-            shutil.copy2(f, dest)
-            copied.append({"name": f.name, "source": str(f), "sha256": sha256(dest), "bytes": dest.stat().st_size})
-    return copied
+# --- run --------------------------------------------------------------------
+def cmd_run(args: argparse.Namespace) -> None:
+    proj = PROJECTS_DIR / args.name
+    if not proj.exists():
+        die(f"no such project: {args.name!r}. Generate it first:  python tool.py gen {args.name}")
+    prompt_file = proj / "prompt.md"
+    if not prompt_file.exists():
+        die(f"{args.name!r} is missing prompt.md — was it generated with `tool.py gen`?")
+
+    e = next((x for x in load_registry().get("experiments", []) if x.get("name") == args.name), {})
+    fw = e.get("framework", "?")
+    meta = framework_meta(fw) if fw and fw != "?" else {}
+    per_dataset = meta.get("seal_mode") == "per-dataset"
+
+    # finish setup -----------------------------------------------------------
+    no_data = getattr(args, "no_data", False)
+    if no_data:
+        if not meta.get("supports_no_data"):
+            die(f"--no-data is not supported by framework {fw!r}. Use a self-sourcing framework "
+                f"(e.g. 'grounded'/'grounded2'), which acquires and verifies its own data at the source gate.")
+        data_mode = "self-sourced"
+    else:
+        # per-dataset frameworks: normalize loose files into data/raw/primary/ so each
+        # dataset has its own sealable subdir.
+        if per_dataset:
+            normalize_flat_into_primary(proj)
+        if not scan_raw(proj):
+            die(f"data/raw/ is empty in {args.name!r}. Copy this experiment's dataset in first:\n"
+                f"  cp <your_data> {proj.relative_to(HERE)}/data/raw/\n"
+                f"or, for a self-sourcing framework, let the run acquire it:\n"
+                f"  python tool.py run {args.name} --no-data")
+        data_mode = "provided"
+
+    for hook in (proj / ".claude" / "hooks").glob("*.sh"):  # ensure hooks are runnable
+        hook.chmod(0o755)
+    if meta.get("uses_api_keys"):  # re-sync latest keys from the master
+        copy_keys_into(proj)
+
+    # Seal provided data now so data/raw is immutable for the run. Self-sourced data
+    # is sealed by the source gate (per dataset) after each data-checker passes.
+    sealed_now = []
+    if not no_data:
+        if per_dataset:
+            sealed_now = seal_all_unsealed(proj)
+        elif scan_raw(proj):
+            write_seal(proj, scan_raw(proj))
+    inputs = scan_raw(proj)
+
+    write_experiment_md(proj, args.name, fw, e.get("idea") or None, inputs, launched=True, data_mode=data_mode)
+    upsert_experiment(args.name, run_started=now_iso(), status="launched", inputs=inputs, data_mode=data_mode)
+
+    # emit the launch command + prompt --------------------------------------
+    abs_proj = str(proj)
+    if meta.get("uses_api_keys"):
+        names = key_names(proj / "api_keys.env")
+        print(f"\napi_keys.env: {'available — ' + ', '.join(names) if names else 'no keys set (edit ' + str(API_KEYS_MASTER) + ')'}")
+    if no_data and not inputs:
+        print(f"\nSetup complete for {args.name!r}: --no-data mode — data/raw/ is empty by design.")
+        print("The source gate will acquire the dataset (data-finder), verify it (data-checker),")
+        if per_dataset:
+            print("and seal it PER DATASET (automatically). You can pair in more data later:  python tool.py augment", args.name, "--data <path>")
+        print("(optional) mirror the self-sourced provenance into the registry:  python tool.py seal", args.name)
+    else:
+        total = sum(i["bytes"] for i in inputs)
+        if no_data:
+            sealed = ""
+        elif per_dataset:
+            sealed = f" — SEALED datasets: {', '.join(sealed_now)}" if sealed_now else " (already sealed)"
+        else:
+            sealed = " and SEALED (immutable)"
+        print(f"\nSetup complete for {args.name!r}: {len(inputs)} input file(s), {total:,} bytes in data/raw/{sealed}")
+        for i in inputs:
+            print(f"  - {i['name']}  ({i['bytes']:,} bytes, sha256 {i['sha256'][:12]}…)")
+        if per_dataset:
+            print("Pair in more data mid-study with:  python tool.py augment", args.name, "--data <path> --name <slug>")
+
+    print("\n" + "=" * 72)
+    print("RUN IT — paste this command into your terminal:")
+    print("=" * 72)
+    print(f'\n  cd "{abs_proj}" && claude "$(cat prompt.md)"\n')
+    print("(prompt.md is editable — tweak it to try a different process for this run.)")
+    print("Or start `claude` in that directory and paste the prompt below:")
+    print("-" * 72)
+    print(prompt_file.read_text().rstrip())
+    print("-" * 72)
 
 
-def write_experiment_md(proj: Path, name: str, fw: str, idea: str | None, copied: list[dict]) -> None:
+# --- helpers shared by gen/run ---------------------------------------------
+def write_experiment_md(proj: Path, name: str, fw: str, idea: str | None,
+                        inputs: list[dict], launched: bool, data_mode: str = "provided") -> None:
+    self_sourced = data_mode == "self-sourced"
     lines = [
         f"# Experiment: {name}",
         "",
         f"- **Framework:** {fw}",
-        f"- **Created:** {now_iso()}",
+        f"- **Generated:** {now_iso()}" if not launched else f"- **Launched:** {now_iso()}",
+        f"- **Data mode:** {'SELF-SOURCED (--no-data) — acquire the dataset at the source gate' if self_sourced else 'PROVIDED — dataset supplied in data/raw/'}",
         "",
         "## Research idea",
         "",
         (idea.strip() if idea else "_(fill this in — the orchestrator reads this file)_"),
         "",
-        "## Inputs (data/raw/ — immutable)",
+        "## Inputs (data/raw/ — immutable once sealed)",
         "",
     ]
-    if copied:
-        lines += [f"- `{c['name']}` — {c['bytes']:,} bytes — sha256 `{c['sha256'][:16]}…`" for c in copied]
-        lines += ["", "Sources:"]
-        lines += [f"- `{c['name']}` ← `{c['source']}`" for c in copied]
+    if inputs:
+        lines += [f"- `{i['name']}` — {i['bytes']:,} bytes — sha256 `{i['sha256'][:16]}…`" for i in inputs]
+    elif self_sourced:
+        lines.append("_(none yet — this is a --no-data run: the source gate (data-finder + data-checker) "
+                     "acquires and verifies the dataset, then seals data/raw/.)_")
     else:
-        lines.append("_(none yet — add files to data/raw/ before running)_")
+        lines.append("_(none yet — copy this experiment's dataset into data/raw/, then `tool.py run`)_")
     lines.append("")
     (proj / "EXPERIMENT.md").write_text("\n".join(lines))
 
 
-def register(name: str, fw: str, idea: str | None, copied: list[dict]) -> None:
-    reg = load_registry()
-    reg["experiments"] = [e for e in reg.get("experiments", []) if e.get("name") != name]
-    reg["experiments"].append({
-        "name": name,
-        "framework": fw,
-        "created": now_iso(),
-        "idea": (idea or "").strip(),
-        "inputs": copied,
-    })
-    reg["experiments"].sort(key=lambda e: e.get("created", ""))
-    save_registry(reg)
+def write_seal(proj: Path, inputs: list[dict]) -> None:
+    """Freeze data/raw/ by recording each file's hash. Once data/.sealed exists,
+    the protect_raw hook blocks every further write to data/raw/."""
+    seal = {"sealed": now_iso(), "files": inputs}
+    (proj / "data" / ".sealed").write_text(json.dumps(seal, indent=2) + "\n")
+
+
+# --- helper commands --------------------------------------------------------
+def cmd_frameworks(_: argparse.Namespace) -> None:
+    fws = list_frameworks()
+    if not fws:
+        print("No frameworks found under", FRAMEWORKS_DIR)
+        return
+    for name in fws:
+        meta = framework_meta(name)
+        print(f"{name:12s} {meta.get('title', '')}")
+        if meta.get("description"):
+            print(f"             {meta['description']}")
+
+
+def cmd_list(_: argparse.Namespace) -> None:
+    reg = {e["name"]: e for e in load_registry().get("experiments", [])}
+    on_disk = {p.name for p in PROJECTS_DIR.iterdir() if p.is_dir()} if PROJECTS_DIR.is_dir() else set()
+    names = sorted(set(reg) | on_disk)
+    if not names:
+        print("No experiments yet. Create one:  python tool.py gen <name>")
+        return
+    print(f"{'NAME':16s} {'FRAMEWORK':10s} {'CREATED':20s} STATUS")
+    for name in names:
+        proj = PROJECTS_DIR / name
+        e = reg.get(name, {})
+        fw = e.get("framework") or ("untracked" if proj.exists() else "?")
+        status = "missing" if not proj.exists() else gate_status(proj)
+        print(f"{name:16s} {fw:10s} {e.get('created', '-')[:19]:20s} {status}")
+
+
+def gate_status(proj: Path) -> str:
+    """Best-effort status: gate report if present, else infer from disk."""
+    report = proj / "validation" / "report.json"
+    if report.exists():
+        try:
+            gates = json.loads(report.read_text()).get("gates", [])
+            # gates may be a list of {status:...} (test_01) or a dict gate->{status:...} (test_03)
+            entries = list(gates.values()) if isinstance(gates, dict) else gates
+            entries = [g for g in entries if isinstance(g, dict)]
+            passed = sum(1 for g in entries if g.get("status") == "PASS")
+            return f"{passed}/{len(entries)} gates PASS" if entries else "report present"
+        except (json.JSONDecodeError, OSError, AttributeError):
+            return "report unreadable"
+    if (proj / "paper" / "main.tex").exists():
+        return "drafting"
+    raw = proj / "data" / "raw"
+    if raw.is_dir() and any(raw.iterdir()):
+        return "ready to run"
+    return "generated (no data)"
 
 
 def cmd_verify(args: argparse.Namespace) -> None:
@@ -240,15 +442,86 @@ def cmd_verify(args: argparse.Namespace) -> None:
     if not runner.exists():
         die(f"no replication/run_all.sh in {args.name!r} — has the pipeline run yet?")
     print(f"Running {runner.relative_to(HERE)} ...\n")
-    rc = subprocess.run(["bash", str(runner)], cwd=proj).returncode
-    raise SystemExit(rc)
+    raise SystemExit(subprocess.run(["bash", str(runner)], cwd=proj).returncode)
+
+
+def cmd_seal(args: argparse.Namespace) -> None:
+    """Record provenance of whatever is in data/raw/ and freeze it. Use after a
+    --no-data run has self-sourced its dataset (the source gate already sealed it
+    during the run; this re-hashes from the control plane and records the inputs into
+    the registry + EXPERIMENT.md). Per-dataset frameworks seal each dataset subdir."""
+    proj = PROJECTS_DIR / args.name
+    if not proj.exists():
+        die(f"no such project: {args.name!r}")
+    inputs = scan_raw(proj)
+    if not inputs:
+        die(f"data/raw/ is empty in {args.name!r}; nothing to seal.")
+    e = next((x for x in load_registry().get("experiments", []) if x.get("name") == args.name), {})
+    meta = framework_meta(e.get("framework")) if e.get("framework") in set(list_frameworks()) else {}
+    if meta.get("seal_mode") == "per-dataset":
+        normalize_flat_into_primary(proj)
+        sealed_now = seal_all_unsealed(proj)
+        inputs = scan_raw(proj)
+        already = [d.name for d in dataset_dirs(proj) if d.name not in sealed_now]
+        msg = f"sealed {sealed_now or '(none new)'}" + (f"; already sealed {already}" if already else "")
+    else:
+        write_seal(proj, inputs)
+        msg = "sealed globally"
+    write_experiment_md(proj, args.name, e.get("framework", "?"), e.get("idea") or None,
+                        inputs, launched=True, data_mode=e.get("data_mode", "provided"))
+    upsert_experiment(args.name, inputs=inputs, sealed=now_iso())
+    total = sum(i["bytes"] for i in inputs)
+    print(f"Sealed {args.name!r}: {len(inputs)} file(s), {total:,} bytes in data/raw/ — {msg} (now immutable).")
+    for i in inputs:
+        print(f"  - {i['name']}  ({i['bytes']:,} bytes, sha256 {i['sha256'][:12]}…)")
+
+
+def cmd_augment(args: argparse.Namespace) -> None:
+    """Pair in an ADDITIONAL dataset mid-study (e.g. weather, a policy-shock series).
+    Copies files into data/raw/<slug>/ and seals just that subdir, leaving existing
+    sealed datasets untouched. Only for per-dataset frameworks (e.g. grounded2)."""
+    proj = PROJECTS_DIR / args.name
+    if not proj.exists():
+        die(f"no such project: {args.name!r}")
+    e = next((x for x in load_registry().get("experiments", []) if x.get("name") == args.name), {})
+    fw = e.get("framework")
+    meta = framework_meta(fw) if fw in set(list_frameworks()) else {}
+    if not meta.get("supports_augment") or meta.get("seal_mode") != "per-dataset":
+        die(f"framework {fw!r} does not support data augmentation. Use a per-dataset framework (e.g. 'grounded2').")
+    src = Path(args.data).expanduser().resolve()
+    if not src.exists():
+        die(f"--data path not found: {src}")
+    slug = (args.name_ or (src.stem if src.is_file() else src.name)).strip().replace(" ", "_")
+    dest = proj / "data" / "raw" / slug
+    if (dest / ".sealed").exists():
+        die(f"dataset {slug!r} already exists and is sealed in {args.name!r}. Choose another --name.")
+    dest.mkdir(parents=True, exist_ok=True)
+    files = [f for f in src.rglob("*") if f.is_file()] if src.is_dir() else [src]
+    for f in files:
+        shutil.copy2(f, dest / f.name)
+    rec = seal_dataset(proj, dest)
+    inputs = scan_raw(proj)
+    upsert_experiment(args.name, inputs=inputs, augmented=now_iso())
+    write_experiment_md(proj, args.name, fw, e.get("idea") or None, inputs, launched=True,
+                        data_mode=e.get("data_mode", "provided"))
+    total = sum(i["bytes"] for i in rec["files"])
+    print(f"Augmented {args.name!r} with dataset {slug!r}: {len(rec['files'])} file(s), {total:,} bytes — SEALED.")
+    print(f"  -> data/raw/{slug}/  (existing sealed datasets untouched)")
+
+
+def cmd_keys(_: argparse.Namespace) -> None:
+    """Show the master API-keys file and which keys are set (values never printed)."""
+    ensure_master_keys()
+    names = key_names(API_KEYS_MASTER)
+    print(f"Master API keys file: {API_KEYS_MASTER}")
+    print(f"Keys set: {', '.join(names) if names else '(none — edit the file above to add e.g. CENSUS_API_KEY=...)'}")
+    print("Edit that one file; `gen`/`run` sync it into each project's api_keys.env.")
 
 
 def cmd_clean(args: argparse.Namespace) -> None:
     proj = PROJECTS_DIR / args.name
     if not proj.exists():
         die(f"no such project: {args.name!r}")
-    # generated artifacts only — never the framework config or data/raw/
     targets = [
         proj / "work", proj / "paper" / "tables", proj / "paper" / "figures",
         proj / "paper" / "main.pdf", proj / "paper" / "main.aux", proj / "paper" / "main.log",
@@ -261,10 +534,9 @@ def cmd_clean(args: argparse.Namespace) -> None:
     print("Will delete generated artifacts (config + data/raw/ kept):")
     for t in existing:
         print(f"  {t.relative_to(proj)}")
-    if not args.yes:
-        if input("Proceed? [y/N] ").strip().lower() not in {"y", "yes"}:
-            print("aborted.")
-            return
+    if not args.yes and input("Proceed? [y/N] ").strip().lower() not in {"y", "yes"}:
+        print("aborted.")
+        return
     for t in existing:
         shutil.rmtree(t) if t.is_dir() else t.unlink()
     print("cleaned.")
@@ -275,13 +547,19 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="tool.py", description="MiddAR experiment control plane")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    n = sub.add_parser("new", help="scaffold a new sealed experiment")
-    n.add_argument("name")
-    n.add_argument("--framework", default="gated", help="framework template (default: gated)")
-    n.add_argument("--data", nargs="*", default=[], metavar="PATH", help="file(s)/dir(s) to copy into data/raw/")
-    n.add_argument("--idea", default=None, help="research idea (written into EXPERIMENT.md)")
-    n.add_argument("--force", action="store_true", help="overwrite config of an existing project (data preserved)")
-    n.set_defaults(func=cmd_new)
+    g = sub.add_parser("gen", aliases=["gen-project"], help="generate a project folder structure from a framework")
+    g.add_argument("name")
+    g.add_argument("--framework", default="gated", help="framework template (default: gated)")
+    g.add_argument("--idea", default=None, help="research idea (written into EXPERIMENT.md)")
+    g.add_argument("--force", action="store_true", help="overwrite config of an existing project (data preserved)")
+    g.set_defaults(func=cmd_gen)
+
+    r = sub.add_parser("run", aliases=["run-experiment"], help="finish setup and print the prompt to paste into Claude Code")
+    r.add_argument("name")
+    r.add_argument("--no-data", action="store_true",
+                   help="self-sourcing run: don't require data/raw/ — the source gate finds/downloads/"
+                        "generates and verifies the dataset (framework must support it, e.g. 'grounded')")
+    r.set_defaults(func=cmd_run)
 
     sub.add_parser("list", help="list experiments and status").set_defaults(func=cmd_list)
     sub.add_parser("frameworks", help="list available frameworks").set_defaults(func=cmd_frameworks)
@@ -289,6 +567,19 @@ def build_parser() -> argparse.ArgumentParser:
     v = sub.add_parser("verify", help="run an experiment's replication/run_all.sh")
     v.add_argument("name")
     v.set_defaults(func=cmd_verify)
+
+    s = sub.add_parser("seal", help="OPTIONAL: mirror data/raw/ provenance into the registry (the agent/run already seal automatically)")
+    s.add_argument("name")
+    s.set_defaults(func=cmd_seal)
+
+    a = sub.add_parser("augment", help="pair in an additional dataset mid-study (per-dataset frameworks, e.g. grounded2)")
+    a.add_argument("name", help="experiment name")
+    a.add_argument("--data", required=True, metavar="PATH", help="file or dir to add as a new dataset")
+    a.add_argument("--name", dest="name_", default=None, metavar="SLUG",
+                   help="dataset slug -> data/raw/<slug>/ (default: derived from the path)")
+    a.set_defaults(func=cmd_augment)
+
+    sub.add_parser("keys", help="show the master API-keys file and which keys are set").set_defaults(func=cmd_keys)
 
     c = sub.add_parser("clean", help="delete generated artifacts (keep config + data)")
     c.add_argument("name")

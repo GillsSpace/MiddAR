@@ -2,23 +2,33 @@
   "experiments": [
     {
       "name": "test_02",
-      "framework": "gated",
-      "created": "2026-06-16T11:57:58-04:00",
-      "idea": "Do same-day temperature shocks affect the probability a Chicago food inspection results in a failure?",
-      "inputs": [
-        {
-          "name": "chicago_inspections_weather.parquet",
-          "source": "/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather.parquet",
-          "sha256": "e1333f5928d5e944ef2ad735f65000d003e4fb196617889d3389218177762705",
-          "bytes": 45053984
-        },
-        {
-          "name": "chicago_inspections_weather_sample.csv",
-          "source": "/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather_sample.csv",
-          "sha256": "2bcbd0543c96f4c0d62061a3fbc0bd8291e7261802d4a9e64dd9ee8846cea337",
-          "bytes": 931710
-        }
-      ]
+      "framework": "grounded",
+      "created": "2026-06-16T13:59:02-04:00",
+      "idea": "using the LMOP Landfill and Project Database, and census data can we find anything interesting about the demographics of the locations landfills are placed?",
+      "status": "launched",
+      "run_started": "2026-06-16T13:59:33-04:00",
+      "inputs": [],
+      "data_mode": "self-sourced"
+    },
+    {
+      "name": "test_03",
+      "framework": "grounded",
+      "created": "2026-06-16T17:11:44-04:00",
+      "idea": "https://oui.doleta.gov/unemploy/index.asp this is data about unemployment inssurance. download it, look through it, and come up with something interesting an novel to write about MAKE SURE IT IS INTERESTING if possible",
+      "status": "launched",
+      "run_started": "2026-06-16T17:12:02-04:00",
+      "inputs": [],
+      "data_mode": "self-sourced"
+    },
+    {
+      "name": "test_04",
+      "framework": "grounded2",
+      "created": "2026-06-19T10:27:08-04:00",
+      "idea": "https://deportationdata.org/--> look through all of the datasets avliable from this site along with any others that might prove useful to generate a paper on an interesting an novel finding",
+      "status": "launched",
+      "run_started": "2026-06-19T10:27:38-04:00",
+      "inputs": [],
+      "data_mode": "self-sourced"
     }
   ]
 }

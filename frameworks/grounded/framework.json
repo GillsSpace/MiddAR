@@ -1,0 +1,20 @@
+{
+  "name": "grounded",
+  "title": "Framework 2 — grounded pipeline (self-sourcing + literature)",
+  "description": "Extends gated with two capabilities: a source gate (data-finder downloads/generates the dataset from the web or an API, data-checker verifies it) and a literature gate (real prior-work review + BibTeX citations). source->audit->profile->design->literature->estimate->robustness->referee->write->reproduce.",
+  "supports_no_data": true,
+  "skeleton_dirs": [
+    "work/00_source",
+    "work/01_audit",
+    "work/02_profile",
+    "work/03_design",
+    "work/04_literature",
+    "work/05_analysis",
+    "work/06_robustness",
+    "paper/sections",
+    "paper/tables",
+    "paper/figures",
+    "replication",
+    "validation"
+  ]
+}

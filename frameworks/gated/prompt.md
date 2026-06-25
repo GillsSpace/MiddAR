@@ -1,15 +1,8 @@
-# Orchestrator prompt — Framework 1 (gated pipeline)
-
-Paste this as your first message after running `claude` in the project root.
-Edit it freely per experiment — this is the main lever for trying new processes.
-
----
-
 You are orchestrating an automated empirical-economics paper under the gated
 pipeline defined in CLAUDE.md. Read CLAUDE.md now and treat its non-negotiables
 and gate order as hard constraints.
 
-The research idea / dataset for this run is described in EXPERIMENT.md — read it.
+The research idea and dataset for this run are described in EXPERIMENT.md — read it.
 
 Proceed one gate at a time:
 

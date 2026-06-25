@@ -1,17 +1,13 @@
 # Experiment: test_02
 
-- **Framework:** gated
-- **Created:** 2026-06-16T11:57:58-04:00
+- **Framework:** grounded
+- **Launched:** 2026-06-16T13:59:33-04:00
+- **Data mode:** SELF-SOURCED (--no-data) — acquire the dataset at the source gate
 
 ## Research idea
 
-Do same-day temperature shocks affect the probability a Chicago food inspection results in a failure?
+using the LMOP Landfill and Project Database, and census data can we find anything interesting about the demographics of the locations landfills are placed?
 
-## Inputs (data/raw/ — immutable)
+## Inputs (data/raw/ — immutable once sealed)
 
-- `chicago_inspections_weather.parquet` — 45,053,984 bytes — sha256 `e1333f5928d5e944…`
-- `chicago_inspections_weather_sample.csv` — 931,710 bytes — sha256 `2bcbd0543c96f4c0…`
-
-Sources:
-- `chicago_inspections_weather.parquet` ← `/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather.parquet`
-- `chicago_inspections_weather_sample.csv` ← `/home/willse/W_Projects/Econ_Fellowship_26/data/chicago_inspections_weather_sample.csv`
+_(none yet — this is a --no-data run: the source gate (data-finder + data-checker) acquires and verifies the dataset, then seals data/raw/.)_

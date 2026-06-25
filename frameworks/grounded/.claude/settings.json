@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)", "Bash(pip:*)", "Bash(pdflatex:*)", "Bash(latexmk:*)",
+      "Bash(curl:*)", "Bash(wget:*)",
+      "Bash(bash replication/run_all.sh)",
+      "WebSearch", "WebFetch",
+      "Read(./**)",
+      "Write(./data/raw/**)", "Write(./data/SOURCE.md)", "Write(./data/.sealed)",
+      "Edit(./data/raw/**)",
+      "Write(./work/**)", "Write(./paper/**)", "Write(./replication/**)", "Write(./validation/**)",
+      "Edit(./work/**)", "Edit(./paper/**)", "Edit(./replication/**)", "Edit(./validation/**)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "bash ./.claude/hooks/protect_raw.sh" }] }
+    ]
+  }
+}
