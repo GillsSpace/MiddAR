@@ -18,6 +18,8 @@ MiddAR/                     <- control plane. Run tool.py here. Do NOT run Claud
     grounded/               <- Framework 2: gated + self-sourcing data + literature/citations
     grounded2/              <- Framework 3: grounded + contribution/advisor + explore→confirm
                                + data augmentation + auto-introspection
+    spirit/                 <- Framework 4: grounded2 + parallel front end + ranked question
+                               portfolio (honest multiplicity) + carry-forward firewall
   projects/                 <- one sealed experiment per dir
     test_01/                <- a completed run (8/8 gates PASS)
     test_03/                <- a grounded run; its introspection.md drove grounded2
@@ -217,6 +219,42 @@ python tool.py augment study --data /path/to/shocks.csv --name policy_shocks
 ```
 
 See `frameworks/grounded2/CLAUDE.md` for the full contract.
+
+### `spirit` — Framework 4 (grounded2 + a portfolio of questions, tested honestly)
+`source ∥ literature → question-gate → [explore → design → design-check → experiment → summarize]* → stage-referee → importance-gate → draft ↔ editor → final-referee → reproduce+audit → introspect`.
+
+grounded2 still picks *one* question up front and runs strictly linearly. spirit
+reorganizes the pipeline around three bets:
+
+- **Parallel front end.** Data prep (`source → seal → audit → profile`) and the
+  literature survey run **concurrently and independently**, so the question set is
+  informed by the field, not anchored on what the data happens to show. They meet at a
+  join barrier before the question gate.
+- **A ranked question *portfolio*, tested with honest multiplicity.** The question gate
+  builds a portfolio ranked by **CAN** (feasibility/identification) and **SHOULD**
+  (importance, from the `advisor`), then **pre-registers it as the multiple-comparison
+  family**. Each confirmatory result is judged against a **multiplicity-corrected
+  threshold** (family size = portfolio size), and the paper **discloses how many
+  questions were examined** — so trying many questions can't silently inflate false
+  discovery. A disappointing result loops back to the portfolio for the next question;
+  **"no shippable contribution" is a valid terminus** (never manufacture importance).
+- **A carry-forward firewall.** A typed `ledger.json` tags reused work `REUSABLE` /
+  `INDEX-ONLY` / `QUARANTINED`; the new `design-checker` enforces that a fresh question's
+  design draws only on `REUSABLE` facts + its own explore pass — never a `QUARANTINED`
+  prior result. This kills duplication across questions without contaminating new inquiry.
+
+New agents: `question-ranker`, `design-checker`, `editor`. The `introspector` is gone —
+spirit's introspection is **authored by the orchestrator** with full run context. spirit
+takes **≥1 of three inputs** — a research `--domain`, an `--idea`, and/or a dataset; a
+domain-only run lets `literature-scout` generate candidate questions from recent papers'
+"next-steps" sections.
+
+```bash
+python tool.py gen study --framework spirit --domain "labor economics of remote work"
+python tool.py run study --no-data        # front end self-sources + profiles; question gate ranks a portfolio
+```
+
+See `frameworks/spirit/CLAUDE.md` for the full contract.
 
 ## Note on disk usage
 

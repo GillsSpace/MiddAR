@@ -1,3 +1,4 @@
 api_keys.env
 *__pycache__
 *projects/
+*.misc

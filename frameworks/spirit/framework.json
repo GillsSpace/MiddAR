@@ -1,0 +1,27 @@
+{
+  "name": "spirit",
+  "title": "Framework 4 — spirit (parallel front end + ranked question portfolio + honest multiplicity + carry-forward firewall)",
+  "description": "Extends grounded2. A parallel front end (data module || literature) joins at a question gate that builds a ranked portfolio of questions (CAN and SHOULD), pre-registers it as the multiple-comparison family, and tests it with multiplicity-corrected inference. Per-question explore->design->design-check(firewall)->experiment->summarize, a stage referee, an importance gate that loops back to the portfolio, draft<->editor, a final referee, reproduction+audit, and an orchestrator-authored introspection. 'No contribution' is a valid terminus. Accepts a research domain, an idea, and/or a dataset (>=1 required); a domain-only run lets literature-scout generate candidate questions from recent papers' open-research/next-step sections. front-end(source+seal+audit+profile || literature) -> question-gate -> [explore->design->design-check->experiment->summarize]* -> stage-referee -> importance-gate -> draft<->editor -> final-referee -> reproduce+audit -> introspect.",
+  "requires_input": true,
+  "supports_no_data": true,
+  "supports_augment": true,
+  "seal_mode": "per-dataset",
+  "uses_api_keys": true,
+  "skeleton_dirs": [
+    "work/00_source",
+    "work/01_audit",
+    "work/02_profile",
+    "work/03_questions",
+    "work/04_explore",
+    "work/05_design",
+    "work/06_literature",
+    "work/07_analysis",
+    "work/08_robustness",
+    "work/09_pivot",
+    "paper/sections",
+    "paper/tables",
+    "paper/figures",
+    "replication",
+    "validation"
+  ]
+}

@@ -29,6 +29,28 @@
       "run_started": "2026-06-19T10:27:38-04:00",
       "inputs": [],
       "data_mode": "self-sourced"
+    },
+    {
+      "name": "test_05",
+      "framework": "spirit",
+      "created": "2026-06-25T09:58:02-04:00",
+      "idea": "look at private school data and compare it with politiucal and demographic data to see if polotics can lead to interestung insights into the education system at the local and state level. here are some links to get started with https://nces.ed.gov/, https://nces.ed.gov/surveys/pss/index.asp, https://nces.ed.gov/surveys/pss/pssdata.asp, https://projects.propublica.org/private-school-demographics, https://www.propublica.org/events/how-to-use-our-private-school-demographics-news-app, https://www.propublica.org/series/segregation-academies",
+      "domain": "",
+      "status": "launched",
+      "run_started": "2026-06-25T09:58:33-04:00",
+      "inputs": [],
+      "data_mode": "self-sourced"
+    },
+    {
+      "name": "test_06",
+      "framework": "radio",
+      "created": "2026-06-26T09:35:37-04:00",
+      "idea": "How do different locations react and recover from extreme weather events: do demographics, polotics, or policys imporve or hurt economic recovery?",
+      "domain": "",
+      "status": "launched",
+      "run_started": "2026-06-26T09:36:11-04:00",
+      "inputs": [],
+      "data_mode": "self-sourced"
     }
   ]
 }
