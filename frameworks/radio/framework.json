@@ -1,0 +1,24 @@
+{
+  "name": "radio",
+  "title": "Framework 5 — radio (cheap question previews + ensemble generation/scoring against a top-journal bar + many lightweight parallel sub-agents)",
+  "description": "Extends spirit. A parallel front end (data scan || lit-domain) feeds an ENSEMBLE question gate: 3 proposers (top-3 each) generate candidates, a lightweight per-candidate PREVIEW (novelty check + design skeleton + an opportunistic <1-min data probe) de-risks each, and 3 scorers rank them 1-10 against a shipped top-journal rubric (guides/QUESTION_GUIDES.md). Pursue the single top question (>20/30, top-5 first pass) through develop-design -> design-audit -> experiments(parallel) -> experiment-audit -> experiment-review; on review 'No' take the next ranked question (re-score only a NEWLY-raised question), else draft. Writer + parallel editors -> final-editor vs guides/PAPER_GUIDES.md -> /openaireview -> final referee -> reproduce+audit (shipped primitives) -> orchestrator-authored introspection. Slimmed multiplicity (within-design only) and a slim no-peek firewall replace spirit's portfolio family and typed ledger. 'No viable paper' is a valid terminus. Accepts a research domain, an idea, and/or a dataset (>=1 required). front-end(data-scan || lit-domain) -> generate(3x) -> preview(parallel) -> score(3x) -> gate -> [data-source -> develop-design -> design-audit -> experiments -> experiment-audit -> experiment-review]* -> draft<->editors -> final-editor -> openaireview -> final-referee -> reproduce+audit -> introspect.",
+  "requires_input": true,
+  "supports_no_data": true,
+  "supports_augment": true,
+  "seal_mode": "per-dataset",
+  "uses_api_keys": true,
+  "skeleton_dirs": [
+    "work/00_scan",
+    "work/01_questions",
+    "work/02_data",
+    "work/03_design",
+    "work/04_experiments",
+    "work/05_review",
+    "work/06_literature",
+    "paper/sections",
+    "paper/tables",
+    "paper/figures",
+    "replication",
+    "validation"
+  ]
+}

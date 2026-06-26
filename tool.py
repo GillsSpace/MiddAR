@@ -60,10 +60,14 @@ API_KEYS_TEMPLATE = """\
 #
 # Keep this file out of version control (add `api_keys.env` to .gitignore).
 
-# CENSUS_API_KEY=
-# FRED_API_KEY=
-# BLS_API_KEY=
-# BEA_API_KEY=
+# Recommended easy-to-get keys (all free, instant/near-instant signup):
+# CENSUS_API_KEY=        # api.census.gov/data/key_signup.html  — ACS/Decennial/CBP
+# FRED_API_KEY=          # fredaccount.stlouisfed.org/apikeys   — macro/financial/regional series
+# BLS_API_KEY=           # data.bls.gov/registrationEngine      — CPI, employment, wages, JOLTS
+# BEA_API_KEY=           # apps.bea.gov/API/signup              — GDP, national/regional accounts
+# EIA_API_KEY=           # eia.gov/opendata/register.php        — energy prices/production/consumption
+# NOAA_CDO_TOKEN=        # ncdc.noaa.gov/cdo-web/token          — historical weather (identification pairings)
+# DATA_GOV_API_KEY=      # api.data.gov/signup                  — umbrella key for many federal APIs
 """
 
 
@@ -212,9 +216,10 @@ def cmd_gen(args: argparse.Namespace) -> None:
     proj.mkdir(parents=True, exist_ok=True)
 
     # 1) copy framework files (CLAUDE.md, prompt.md, .claude/**) into the project.
-    #    framework.json is control-plane metadata — don't ship it into the runtime.
+    #    framework.json is control-plane metadata and README.md is framework documentation —
+    #    don't ship either into the runtime.
     for item in fw_dir.iterdir():
-        if item.name == "framework.json":
+        if item.name in ("framework.json", "README.md"):
             continue
         dest = proj / item.name
         if item.is_dir():
@@ -240,8 +245,16 @@ def cmd_gen(args: argparse.Namespace) -> None:
         copy_keys_into(proj)
 
     # 4) provenance stubs (data filled in at `run` time)
-    write_experiment_md(proj, name, fw, args.idea, inputs=[], launched=False)
-    upsert_experiment(name, framework=fw, created=now_iso(), idea=(args.idea or "").strip(), status="generated")
+    domain = getattr(args, "domain", None)
+    write_experiment_md(proj, name, fw, args.idea, inputs=[], launched=False, domain=domain)
+    upsert_experiment(name, framework=fw, created=now_iso(), idea=(args.idea or "").strip(),
+                      domain=(domain or "").strip(), status="generated")
+
+    # frameworks that require ≥1 input: warn now if neither domain nor idea was given
+    # (a dataset pasted into data/raw/ before `run` also satisfies the rule — enforced there).
+    if meta.get("requires_input") and not ((domain or "").strip() or (args.idea or "").strip()):
+        print(f"\n  ⚠ no --domain or --idea given. {fw!r} needs at least one input — "
+              f"paste a dataset into data/raw/ before `run`, or re-gen with --domain/--idea.")
 
     rel = proj.relative_to(HERE)
     per_dataset = meta.get("seal_mode") == "per-dataset"
@@ -276,6 +289,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     fw = e.get("framework", "?")
     meta = framework_meta(fw) if fw and fw != "?" else {}
     per_dataset = meta.get("seal_mode") == "per-dataset"
+    domain = e.get("domain") or None
 
     # finish setup -----------------------------------------------------------
     no_data = getattr(args, "no_data", False)
@@ -311,7 +325,15 @@ def cmd_run(args: argparse.Namespace) -> None:
             write_seal(proj, scan_raw(proj))
     inputs = scan_raw(proj)
 
-    write_experiment_md(proj, args.name, fw, e.get("idea") or None, inputs, launched=True, data_mode=data_mode)
+    # ≥1-input rule (frameworks that declare requires_input, e.g. spirit): at least one of
+    # {research area, idea, a dataset in data/raw/} must be present. data/raw is known now.
+    if meta.get("requires_input") and not ((domain or "").strip() or (e.get("idea") or "").strip() or inputs):
+        die(f"{args.name!r} ({fw}) has no input: provide at least one of a research area, an idea, "
+            f"or a dataset.\n  - re-gen with --domain/--idea, or\n  - paste a dataset into "
+            f"{proj.relative_to(HERE)}/data/raw/ and re-run.")
+
+    write_experiment_md(proj, args.name, fw, e.get("idea") or None, inputs, launched=True,
+                        data_mode=data_mode, domain=domain)
     upsert_experiment(args.name, run_started=now_iso(), status="launched", inputs=inputs, data_mode=data_mode)
 
     # emit the launch command + prompt --------------------------------------
@@ -342,17 +364,14 @@ def cmd_run(args: argparse.Namespace) -> None:
     print("\n" + "=" * 72)
     print("RUN IT — paste this command into your terminal:")
     print("=" * 72)
-    print(f'\n  cd "{abs_proj}" && claude "$(cat prompt.md)"\n')
+    print(f'\n  cd "{abs_proj}" && claude --dangerously-skip-permissions "$(cat prompt.md)"\n')
     print("(prompt.md is editable — tweak it to try a different process for this run.)")
-    print("Or start `claude` in that directory and paste the prompt below:")
-    print("-" * 72)
-    print(prompt_file.read_text().rstrip())
-    print("-" * 72)
 
 
 # --- helpers shared by gen/run ---------------------------------------------
 def write_experiment_md(proj: Path, name: str, fw: str, idea: str | None,
-                        inputs: list[dict], launched: bool, data_mode: str = "provided") -> None:
+                        inputs: list[dict], launched: bool, data_mode: str = "provided",
+                        domain: str | None = None) -> None:
     self_sourced = data_mode == "self-sourced"
     lines = [
         f"# Experiment: {name}",
@@ -361,9 +380,18 @@ def write_experiment_md(proj: Path, name: str, fw: str, idea: str | None,
         f"- **Generated:** {now_iso()}" if not launched else f"- **Launched:** {now_iso()}",
         f"- **Data mode:** {'SELF-SOURCED (--no-data) — acquire the dataset at the source gate' if self_sourced else 'PROVIDED — dataset supplied in data/raw/'}",
         "",
+    ]
+    if domain and domain.strip():
+        lines += ["## Research area", "", domain.strip(), ""]
+    # idea placeholder adapts: if a research area is given, the orchestrator may derive
+    # the question from it (no idea required), otherwise prompt the user to fill one in.
+    idea_placeholder = ("_(none — derive candidate questions from the research area above)_"
+                        if (domain and domain.strip())
+                        else "_(fill this in — the orchestrator reads this file)_")
+    lines += [
         "## Research idea",
         "",
-        (idea.strip() if idea else "_(fill this in — the orchestrator reads this file)_"),
+        (idea.strip() if idea else idea_placeholder),
         "",
         "## Inputs (data/raw/ — immutable once sealed)",
         "",
@@ -445,6 +473,59 @@ def cmd_verify(args: argparse.Namespace) -> None:
     raise SystemExit(subprocess.run(["bash", str(runner)], cwd=proj).returncode)
 
 
+def openaireview_installed() -> bool:
+    """True if the OpenAIReview Claude Code skill or its CLI is available."""
+    if shutil.which("openaireview"):
+        return True
+    skills = Path.home() / ".claude" / "skills"
+    return skills.is_dir() and any("openaireview" in p.name for p in skills.iterdir())
+
+
+def cmd_review(args: argparse.Namespace) -> None:
+    """POST-RUN: launch an independent OpenAIReview peer review of the finished paper
+    via the Claude Code skill (uses your Claude subscription — no extra API credits) and
+    feeds the LaTeX source directly (no OCR, more reliable than a PDF pass). Complements
+    the framework's internal `referee` with an external review."""
+    proj = PROJECTS_DIR / args.name
+    if not proj.exists():
+        die(f"no such project: {args.name!r}")
+    rel_tex = args.tex or "paper/main.tex"
+    tex = proj / rel_tex
+    if not tex.exists():
+        die(f"no LaTeX at {args.name}/{rel_tex} — has the run produced the paper yet? "
+            f"(override the file with --tex <path relative to the project>)")
+
+    if not openaireview_installed():
+        print("OpenAIReview is not installed. Install it once (then reviews run free via your")
+        print("Claude subscription — no extra API credits):\n")
+        print("  pip install openaireview && openaireview install-skill\n")
+        print(f"Then re-run:  python tool.py review {args.name}")
+        print("(see `openaireview --help` if the install subcommand name differs in your version)")
+        return
+
+    # The skill takes a file path; a .tex is plain text, so it reviews the LaTeX directly
+    # with NO OCR step (the only paid part of OpenAIReview, and only for PDFs).
+    skill_prompt = f"/openaireview {rel_tex}"
+    print(f"OpenAIReview — independent external review of {args.name}/{rel_tex}")
+    print("  • runs via the Claude Code skill (your subscription; no extra API credits)")
+    print("  • LaTeX input — no OCR")
+    print(f"  • results (JSON) land in {proj.relative_to(HERE)}/review_results/")
+    serve_cmd = f'cd "{proj}" && openaireview serve'
+    if args.print_only:
+        print("\nPaste this to launch the review:")
+        print(f'\n  cd "{proj}" && claude --dangerously-skip-permissions "{skill_prompt}"\n')
+        print("Then, to serve the results webpage, paste:")
+        print(f'\n  {serve_cmd}\n')
+        return
+    print("\nLaunching ...\n")
+    rc = subprocess.run(["claude", "--dangerously-skip-permissions", skill_prompt], cwd=proj).returncode
+    print("\n" + "=" * 72)
+    print("Review finished. To serve the results webpage, paste this:")
+    print("=" * 72)
+    print(f'\n  {serve_cmd}\n')
+    raise SystemExit(rc)
+
+
 def cmd_seal(args: argparse.Namespace) -> None:
     """Record provenance of whatever is in data/raw/ and freeze it. Use after a
     --no-data run has self-sourced its dataset (the source gate already sealed it
@@ -468,7 +549,8 @@ def cmd_seal(args: argparse.Namespace) -> None:
         write_seal(proj, inputs)
         msg = "sealed globally"
     write_experiment_md(proj, args.name, e.get("framework", "?"), e.get("idea") or None,
-                        inputs, launched=True, data_mode=e.get("data_mode", "provided"))
+                        inputs, launched=True, data_mode=e.get("data_mode", "provided"),
+                        domain=e.get("domain") or None)
     upsert_experiment(args.name, inputs=inputs, sealed=now_iso())
     total = sum(i["bytes"] for i in inputs)
     print(f"Sealed {args.name!r}: {len(inputs)} file(s), {total:,} bytes in data/raw/ — {msg} (now immutable).")
@@ -503,7 +585,7 @@ def cmd_augment(args: argparse.Namespace) -> None:
     inputs = scan_raw(proj)
     upsert_experiment(args.name, inputs=inputs, augmented=now_iso())
     write_experiment_md(proj, args.name, fw, e.get("idea") or None, inputs, launched=True,
-                        data_mode=e.get("data_mode", "provided"))
+                        data_mode=e.get("data_mode", "provided"), domain=e.get("domain") or None)
     total = sum(i["bytes"] for i in rec["files"])
     print(f"Augmented {args.name!r} with dataset {slug!r}: {len(rec['files'])} file(s), {total:,} bytes — SEALED.")
     print(f"  -> data/raw/{slug}/  (existing sealed datasets untouched)")
@@ -550,6 +632,8 @@ def build_parser() -> argparse.ArgumentParser:
     g = sub.add_parser("gen", aliases=["gen-project"], help="generate a project folder structure from a framework")
     g.add_argument("name")
     g.add_argument("--framework", default="gated", help="framework template (default: gated)")
+    g.add_argument("--domain", default=None, help="research area/domain (written into EXPERIMENT.md; "
+                   "domain-only runs let the framework generate candidate questions)")
     g.add_argument("--idea", default=None, help="research idea (written into EXPERIMENT.md)")
     g.add_argument("--force", action="store_true", help="overwrite config of an existing project (data preserved)")
     g.set_defaults(func=cmd_gen)
@@ -567,6 +651,14 @@ def build_parser() -> argparse.ArgumentParser:
     v = sub.add_parser("verify", help="run an experiment's replication/run_all.sh")
     v.add_argument("name")
     v.set_defaults(func=cmd_verify)
+
+    rv = sub.add_parser("review", help="POST-RUN: launch an independent OpenAIReview peer review of the paper via the Claude Code skill (your subscription, no extra API credits; reviews the LaTeX, no OCR)")
+    rv.add_argument("name")
+    rv.add_argument("--tex", default=None, metavar="PATH",
+                    help="LaTeX file to review, relative to the project (default: paper/main.tex)")
+    rv.add_argument("--print", dest="print_only", action="store_true",
+                    help="just print the launch command instead of running it")
+    rv.set_defaults(func=cmd_review)
 
     s = sub.add_parser("seal", help="OPTIONAL: mirror data/raw/ provenance into the registry (the agent/run already seal automatically)")
     s.add_argument("name")

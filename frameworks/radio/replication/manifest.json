@@ -1,0 +1,10 @@
+{
+  "_comment": "SHIPPED radio primitive. The orchestrator fills 'steps' as the econometrician produces analysis scripts. Each step is a shell command run from the project root, in order, by run_all.sh. Keep steps deterministic and idempotent; split any step that could time out into smaller checkpointed steps (non-negotiable 20). 'seed' is exported as MIDDAR_SEED/PYTHONHASHSEED.",
+  "seed": 20240626,
+  "tolerance_abs": 0.005,
+  "steps": [],
+  "outputs": {
+    "tables": "paper/tables/",
+    "figures": "paper/figures/"
+  }
+}
